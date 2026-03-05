@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HeyGen Video Generator</title>
+    <title>HeyGen WebApp (Fixed)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -17,8 +17,9 @@
             min-height: 100vh;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
         
         .container {
@@ -28,18 +29,7 @@
             width: 100%;
             max-width: 500px;
             padding: 30px;
-            animation: slideIn 0.5s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-bottom: 20px;
         }
         
         h1 {
@@ -50,64 +40,47 @@
             gap: 10px;
         }
         
-        h1 i {
-            font-size: 28px;
-        }
-        
         .subtitle {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
         }
         
-        .type-selector {
+        .mode-selector {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            margin-bottom: 25px;
         }
         
-        .type-btn {
+        .mode-btn {
             flex: 1;
-            min-width: 140px;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 10px;
             background: white;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 16px;
+            transition: all 0.3s;
             font-weight: 600;
-            color: #555;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            text-align: center;
         }
         
-        .type-btn:hover {
+        .mode-btn:hover {
             border-color: #764ba2;
-            transform: translateY(-2px);
         }
         
-        .type-btn.active {
-            border-color: #764ba2;
+        .mode-btn.active {
             background: #764ba2;
             color: white;
-        }
-        
-        .type-btn i {
-            font-size: 24px;
+            border-color: #764ba2;
         }
         
         .form-section {
             display: none;
-            animation: fadeIn 0.5s ease;
         }
         
         .form-section.active {
             display: block;
+            animation: fadeIn 0.5s;
         }
         
         @keyframes fadeIn {
@@ -122,181 +95,137 @@
             color: #444;
         }
         
-        textarea, input, select {
+        textarea, select {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 16px;
             margin-bottom: 20px;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s;
         }
         
         textarea {
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
-            font-family: inherit;
         }
         
-        textarea:focus, input:focus, select:focus {
+        textarea:focus, select:focus {
             outline: none;
             border-color: #764ba2;
         }
         
-        .file-upload {
-            border: 2px dashed #e0e0e0;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-        }
-        
-        .file-upload:hover {
-            border-color: #764ba2;
-            background: #f0e6ff;
-        }
-        
-        .file-upload i {
-            font-size: 48px;
-            color: #764ba2;
-            margin-bottom: 15px;
-        }
-        
-        .file-info {
-            display: none;
-            padding: 15px;
-            background: #f0e6ff;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            color: #764ba2;
-            font-weight: 600;
-        }
-        
-        .file-info.show {
-            display: block;
-        }
-        
-        .submit-btn {
+        .button {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
         
-        .submit-btn:hover {
+        .button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
         
-        .submit-btn:disabled {
+        .button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            color: #764ba2;
+        .debug-panel {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .debug-title {
+            color: #495057;
             font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .loading.show {
-            display: block;
+        .log {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
         
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #764ba2;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .log.info {
+            border-left: 4px solid #17a2b8;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .log.success {
+            border-left: 4px solid #28a745;
         }
         
-        .status-message {
+        .log.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .log.warning {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .status {
             padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
             display: none;
-            text-align: center;
-            font-weight: 600;
         }
         
-        .status-message.success {
-            display: block;
+        .status.success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+            display: block;
         }
         
-        .status-message.error {
-            display: block;
+        .status.error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .type-btn {
-                min-width: 100%;
-            }
+            display: block;
         }
     </style>
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>
-            <span>🎬</span> HeyGen Video Generator
-        </h1>
-        <p class="subtitle">Создавайте профессиональные видео за минуты</p>
+        <h1>🎬 HeyGen WebApp (Fixed)</h1>
+        <p class="subtitle">Этот WebApp работает в браузере и отправляет данные напрямую на webhook</p>
         
-        <div class="type-selector">
-            <button class="type-btn active" data-type="video-agent">
-                <span>🎬</span>
-                Видео из текста
-            </button>
-            <button class="type-btn" data-type="image-to-video">
-                <span>📸</span>
-                Видео из фото
-            </button>
-            <button class="type-btn" data-type="translate">
-                <span>🌐</span>
-                Перевести видео
-            </button>
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="video-agent">Видео из текста</button>
+            <button class="mode-btn" data-mode="image-to-video">Видео из фото</button>
+            <button class="mode-btn" data-mode="translate">Перевести видео</button>
         </div>
         
         <!-- Video Agent Form -->
         <div class="form-section active" id="video-agent-form">
-            <label for="video-text">Текст для видео:</label>
-            <textarea id="video-text" placeholder="Введите текст, который будет озвучен в видео... (макс. 2000 символов)" maxlength="2000"></textarea>
+            <label for="text-input">Текст для видео:</label>
+            <textarea id="text-input" placeholder="Введите текст для видео... (макс. 2000 символов)" maxlength="2000">Привет, это тестовое видео из WebApp</textarea>
             
             <label for="avatar-select">Аватар:</label>
             <select id="avatar-select">
@@ -309,227 +238,262 @@
         <!-- Image to Video Form -->
         <div class="form-section" id="image-to-video-form">
             <label for="image-text">Текст для озвучки:</label>
-            <textarea id="image-text" placeholder="Введите текст, который будет озвучен поверх фото..." maxlength="2000"></textarea>
+            <textarea id="image-text" placeholder="Введите текст для озвучки фото..." maxlength="2000">Это фото с описанием</textarea>
             
-            <div class="file-upload" id="image-upload">
-                <div>📸</div>
-                <div>Нажмите чтобы загрузить фото</div>
-                <div style="font-size: 14px; color: #888; margin-top: 5px;">PNG, JPG до 10MB</div>
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center; color: #6c757d; margin-bottom: 20px;">
+                📸 В реальном WebApp здесь была бы загрузка фото
             </div>
-            <div class="file-info" id="image-info"></div>
         </div>
         
         <!-- Translate Form -->
         <div class="form-section" id="translate-form">
-            <div class="file-upload" id="video-upload">
-                <div>🎥</div>
-                <div>Нажмите чтобы загрузить видео</div>
-                <div style="font-size: 14px; color: #888; margin-top: 5px;">MP4 до 100MB</div>
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center; color: #6c757d; margin-bottom: 20px;">
+                🎥 В реальном WebApp здесь была бы загрузка видео
             </div>
-            <div class="file-info" id="video-info"></div>
             
             <label for="language-select">Язык перевода:</label>
             <select id="language-select">
                 <option value="ru">🇷🇺 Русский</option>
                 <option value="en">🇺🇸 Английский</option>
                 <option value="es">🇪🇸 Испанский</option>
-                <option value="de">🇩🇪 Немецкий</option>
-                <option value="fr">🇫🇷 Французский</option>
             </select>
         </div>
         
-        <button class="submit-btn" id="submit-btn">
-            <span>🚀</span>
-            Создать видео
-        </button>
+        <button class="button" id="send-btn">🚀 Отправить данные на Webhook</button>
         
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <div>Генерирую видео... Это может занять до 2 минут</div>
+        <div class="status" id="status"></div>
+    </div>
+    
+    <div class="container debug-panel">
+        <div class="debug-title">
+            <span>🐛</span> Панель отладки (логи здесь и в Console браузера)
         </div>
-        
-        <div class="status-message" id="success-message">
-            ✅ Видео успешно создано! Оно будет отправлено вам в чат.
-        </div>
-        
-        <div class="status-message" id="error-message">
-            ❌ Произошла ошибка. Попробуйте еще раз.
+        <div class="log info" id="debug-log">Готов к работе...</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="button" id="clear-log" style="padding: 10px; font-size: 14px;">Очистить логи</button>
+            <button class="button" id="test-webhook" style="padding: 10px; font-size: 14px;">Тест Webhook</button>
         </div>
     </div>
     
     <script>
-        // Telegram WebApp initialization
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.setText("Готово");
+        // === КОНФИГУРАЦИЯ ===
+        const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/heigen-logging';
+        // Замени на свой webhook URL, если нужно
         
-        // State
-        let currentType = 'video-agent';
-        let selectedImageFile = null;
-        let selectedVideoFile = null;
+        // === ЭМУЛЯЦИЯ Telegram WebApp SDK ===
+        const Telegram = {
+            WebApp: {
+                initData: 'query_id=AAHdF6IQAAAAAJ0MhCIhBKmN&user=%7B%22id%22%3A371324849%2C%22first_name%22%3A%22Big%2AOracle%22%2C%22username%22%3A%22BigOracle%22%7D&auth_date=1772743604&hash=abc123',
+                initDataUnsafe: {
+                    user: { id: 371324849, first_name: 'Big*Oracle', username: 'BigOracle' }
+                },
+                sendData: function(data) {
+                    console.log('📤 Telegram.WebApp.sendData() called with:', data);
+                    // В реальном Telegram данные отправляются автоматически
+                    // Здесь эмулируем отправку через fetch
+                    sendToWebhook(data);
+                },
+                ready: function() { console.log('✅ Telegram.WebApp.ready()'); },
+                expand: function() { console.log('📱 Telegram.WebApp.expand()'); }
+            }
+        };
         
-        // DOM Elements
-        const typeButtons = document.querySelectorAll('.type-btn');
+        // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
+        let currentMode = 'video-agent';
+        let logEntries = [];
+        
+        // === DOM ЭЛЕМЕНТЫ ===
+        const modeButtons = document.querySelectorAll('.mode-btn');
         const formSections = document.querySelectorAll('.form-section');
-        const submitBtn = document.getElementById('submit-btn');
-        const loading = document.getElementById('loading');
-        const successMessage = document.getElementById('success-message');
-        const errorMessage = document.getElementById('error-message');
+        const sendBtn = document.getElementById('send-btn');
+        const debugLog = document.getElementById('debug-log');
+        const statusDiv = document.getElementById('status');
+        const clearLogBtn = document.getElementById('clear-log');
+        const testWebhookBtn = document.getElementById('test-webhook');
         
-        // File upload handlers
-        document.getElementById('image-upload').addEventListener('click', () => {
-            tg.showPopup({
-                title: 'Загрузка фото',
-                message: 'В Telegram WebApp используйте встроенную загрузку файлов',
-                buttons: [{ type: 'ok' }]
-            });
-        });
-        
-        document.getElementById('video-upload').addEventListener('click', () => {
-            tg.showPopup({
-                title: 'Загрузка видео',
-                message: 'В Telegram WebApp используйте встроенную загрузку файлов',
-                buttons: [{ type: 'ok' }]
-            });
-        });
-        
-        // Type selection
-        typeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                typeButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                formSections.forEach(section => section.classList.remove('active'));
-                
-                currentType = btn.dataset.type;
-                document.getElementById(`${currentType}-form`).classList.add('active');
-                
-                // Clear file selections when switching types
-                selectedImageFile = null;
-                selectedVideoFile = null;
-                document.getElementById('image-info').classList.remove('show');
-                document.getElementById('video-info').classList.remove('show');
-            });
-        });
-        
-        // Form submission
-        submitBtn.addEventListener('click', async () => {
-            // Validate form
-            let isValid = true;
-            let error = '';
+        // === ФУНКЦИИ ЛОГИРОВАНИЯ ===
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${message}`;
+            logEntries.push({ message: entry, type });
             
-            if (currentType === 'video-agent') {
-                const text = document.getElementById('video-text').value.trim();
-                if (!text) {
-                    isValid = false;
-                    error = 'Введите текст для видео';
-                } else if (text.length > 2000) {
-                    isValid = false;
-                    error = 'Текст слишком длинный (макс. 2000 символов)';
-                }
-            } else if (currentType === 'image-to-video') {
-                const text = document.getElementById('image-text').value.trim();
-                if (!text) {
-                    isValid = false;
-                    error = 'Введите текст для озвучки';
-                }
-                if (!selectedImageFile) {
-                    isValid = false;
-                    error = 'Загрузите фото';
-                }
-            } else if (currentType === 'translate') {
-                if (!selectedVideoFile) {
-                    isValid = false;
-                    error = 'Загрузите видео';
-                }
-            }
+            // Обновляем панель логов
+            debugLog.textContent = logEntries.map(e => e.message).join('\n');
+            debugLog.className = `log ${type}`;
             
-            if (!isValid) {
-                tg.showPopup({
-                    title: 'Ошибка',
-                    message: error,
-                    buttons: [{ type: 'ok' }]
-                });
-                return;
-            }
+            // Также в консоль браузера
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearLog() {
+            logEntries = [];
+            debugLog.textContent = 'Логи очищены';
+            debugLog.className = 'log info';
+        }
+        
+        // === ОТПРАВКА ДАННЫХ НА WEBHOOK ===
+        async function sendToWebhook(data) {
+            addLog(`Отправка данных на webhook: ${WEBHOOK_URL}`, 'info');
             
-            // Prepare data for Telegram WebApp
-            const formData = {
-                type: currentType,
+            // Формируем данные для отправки
+            const payload = {
+                type: currentMode,
                 text: '',
                 file_id: null,
                 settings: {}
             };
             
-            switch (currentType) {
+            // Заполняем в зависимости от режима
+            switch (currentMode) {
                 case 'video-agent':
-                    formData.text = document.getElementById('video-text').value.trim();
-                    formData.settings.avatar = document.getElementById('avatar-select').value;
-                    formData.settings.orientation = 'portrait';
+                    payload.text = document.getElementById('text-input').value.trim();
+                    payload.settings.avatar = document.getElementById('avatar-select').value;
+                    payload.settings.orientation = 'portrait';
                     break;
                     
                 case 'image-to-video':
-                    formData.text = document.getElementById('image-text').value.trim();
-                    formData.file_id = selectedImageFile ? selectedImageFile.id : 'demo_file_id';
-                    formData.settings.voice = 'default';
+                    payload.text = document.getElementById('image-text').value.trim();
+                    payload.file_id = 'demo_photo_file_id';
+                    payload.settings.voice = 'default';
                     break;
                     
                 case 'translate':
-                    formData.file_id = selectedVideoFile ? selectedVideoFile.id : 'demo_file_id';
-                    formData.settings.language = document.getElementById('language-select').value;
+                    payload.file_id = 'demo_video_file_id';
+                    payload.settings.language = document.getElementById('language-select').value;
                     break;
             }
             
-            // Show loading
-            submitBtn.disabled = true;
-            loading.classList.add('show');
-            successMessage.classList.remove('success');
-            errorMessage.classList.remove('error');
+            addLog(`Данные: ${JSON.stringify(payload, null, 2)}`, 'info');
             
-            // Simulate processing delay (in real app, this would be handled by backend)
-            setTimeout(() => {
-                // In production: Send data via Telegram WebApp
-                // tg.sendData(JSON.stringify(formData));
+            // В реальном WebApp Telegram сам отправляет данные
+            // Здесь эмулируем отправку через fetch
+            try {
+                addLog('Отправка POST запроса...', 'warning');
                 
-                // For demo purposes, show success
-                loading.classList.remove('show');
-                successMessage.classList.add('success');
-                submitBtn.disabled = false;
-                
-                // Reset form after 3 seconds
-                setTimeout(() => {
-                    successMessage.classList.remove('success');
-                    if (currentType === 'video-agent') {
-                        document.getElementById('video-text').value = '';
-                    } else if (currentType === 'image-to-video') {
-                        document.getElementById('image-text').value = '';
-                        selectedImageFile = null;
-                        document.getElementById('image-info').classList.remove('show');
-                    } else if (currentType === 'translate') {
-                        selectedVideoFile = null;
-                        document.getElementById('video-info').classList.remove('show');
+                // Эмулируем структуру Telegram update
+                const telegramUpdate = {
+                    update_id: Math.floor(Math.random() * 1000000),
+                    message: {
+                        message_id: Math.floor(Math.random() * 1000),
+                        from: Telegram.WebApp.initDataUnsafe.user,
+                        chat: { id: Telegram.WebApp.initDataUnsafe.user.id, type: 'private' },
+                        date: Math.floor(Date.now() / 1000),
+                        web_app_data: {
+                            data: JSON.stringify(payload)
+                        }
                     }
-                }, 3000);
+                };
                 
-            }, 2000);
-        });
-        
-        // Telegram WebApp event handlers
-        tg.onEvent('webAppDataReceived', (event) => {
-            console.log('WebApp data received:', event);
-        });
-        
-        // Initialize
-        console.log('HeyGen WebApp initialized. Current user:', tg.initDataUnsafe.user);
-        
-        // Demo mode notice
-        if (!tg.initDataUnsafe.user) {
-            tg.showPopup({
-                title: 'Демо режим',
-                message: 'Это демо-версия WebApp. В реальном приложении здесь будет загрузка файлов через Telegram.',
-                buttons: [{ type: 'ok' }]
-            });
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(telegramUpdate)
+                });
+                
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    addLog(`✅ Webhook ответил: ${response.status}`, 'success');
+                    showStatus('Данные отправлены! Проверь Executions в n8n.', 'success');
+                } else {
+                    addLog(`❌ Ошибка webhook: ${response.status} - ${responseText}`, 'error');
+                    showStatus(`Ошибка: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Ошибка отправки: ${error.message}`, 'error');
+                showStatus(`Ошибка сети: ${error.message}`, 'error');
+            }
         }
+        
+        // === ПОКАЗАТЬ СТАТУС ===
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            
+            // Автоочистка через 5 секунд
+            setTimeout(() => {
+                statusDiv.className = 'status';
+            }, 5000);
+        }
+        
+        // === ТЕСТ WEBHOOK ===
+        async function testWebhook() {
+            addLog('🧪 Тестирование webhook...', 'warning');
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'HEAD',
+                    timeout: 5000
+                }).catch(e => ({ ok: false, status: 'timeout' }));
+                
+                if (response.ok) {
+                    addLog(`✅ Webhook доступен: ${response.status}`, 'success');
+                } else {
+                    addLog(`⚠️ Webhook недоступен: ${response.status}`, 'warning');
+                }
+            } catch (error) {
+                addLog(`❌ Ошибка теста: ${error.message}`, 'error');
+            }
+        }
+        
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        function init() {
+            addLog('🚀 WebApp инициализирован', 'success');
+            addLog(`Режим: ${currentMode}`, 'info');
+            addLog(`Webhook URL: ${WEBHOOK_URL}`, 'info');
+            
+            // Эмулируем инициализацию Telegram
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            
+            // Переключение режимов
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    formSections.forEach(section => section.classList.remove('active'));
+                    
+                    currentMode = btn.dataset.mode;
+                    document.getElementById(`${currentMode}-form`).classList.add('active');
+                    
+                    addLog(`Переключен режим: ${currentMode}`, 'info');
+                });
+            });
+            
+            // Отправка данных
+            sendBtn.addEventListener('click', () => {
+                addLog('🔄 Отправка данных...', 'warning');
+                // Используем эмулированный Telegram SDK
+                Telegram.WebApp.sendData({ test: 'data' });
+            });
+            
+            // Очистка логов
+            clearLogBtn.addEventListener('click', clearLog);
+            
+            // Тест webhook
+            testWebhookBtn.addEventListener('click', testWebhook);
+            
+            // Автотест webhook при загрузке
+            setTimeout(testWebhook, 1000);
+        }
+        
+        // Запуск при загрузке
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Экспортируем для отладки в консоли
+        window.debug = {
+            addLog,
+            clearLog,
+            sendToWebhook,
+            testWebhook,
+            Telegram
+        };
+        
+        addLog('💡 Для отладки в консоли браузера используй window.debug', 'info');
     </script>
 </body>
 </html>
