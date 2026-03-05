@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeyGen Video Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h1 i {
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .type-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-btn:hover {
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        .type-btn.active {
+            border-color: #764ba2;
+            background: #764ba2;
+            color: white;
+        }
+        
+        .type-btn i {
+            font-size: 24px;
+        }
+        
+        .form-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        
+        .file-upload:hover {
+            border-color: #764ba2;
+            background: #f0e6ff;
+        }
+        
+        .file-upload i {
+            font-size: 48px;
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+        
+        .file-info {
+            display: none;
+            padding: 15px;
+            background: #f0e6ff;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        .file-info.show {
+            display: block;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #764ba2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .status-message.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .type-btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>🎬</span> HeyGen Video Generator
+        </h1>
+        <p class="subtitle">Создавайте профессиональные видео за минуты</p>
+        
+        <div class="type-selector">
+            <button class="type-btn active" data-type="video-agent">
+                <span>🎬</span>
+                Видео из текста
+            </button>
+            <button class="type-btn" data-type="image-to-video">
+                <span>📸</span>
+                Видео из фото
+            </button>
+            <button class="type-btn" data-type="translate">
+                <span>🌐</span>
+                Перевести видео
+            </button>
+        </div>
+        
+        <!-- Video Agent Form -->
+        <div class="form-section active" id="video-agent-form">
+            <label for="video-text">Текст для видео:</label>
+            <textarea id="video-text" placeholder="Введите текст, который будет озвучен в видео... (макс. 2000 символов)" maxlength="2000"></textarea>
+            
+            <label for="avatar-select">Аватар:</label>
+            <select id="avatar-select">
+                <option value="Adriana SuitSofa Front">👩 Adriana (стандартный)</option>
+                <option value="Ethan SuitSofa Front">👨 Ethan (мужчина)</option>
+                <option value="Lena Business Front">👩‍💼 Lena (бизнес)</option>
+            </select>
+        </div>
+        
+        <!-- Image to Video Form -->
+        <div class="form-section" id="image-to-video-form">
+            <label for="image-text">Текст для озвучки:</label>
+            <textarea id="image-text" placeholder="Введите текст, который будет озвучен поверх фото..." maxlength="2000"></textarea>
+            
+            <div class="file-upload" id="image-upload">
+                <div>📸</div>
+                <div>Нажмите чтобы загрузить фото</div>
+                <div style="font-size: 14px; color: #888; margin-top: 5px;">PNG, JPG до 10MB</div>
+            </div>
+            <div class="file-info" id="image-info"></div>
+        </div>
+        
+        <!-- Translate Form -->
+        <div class="form-section" id="translate-form">
+            <div class="file-upload" id="video-upload">
+                <div>🎥</div>
+                <div>Нажмите чтобы загрузить видео</div>
+                <div style="font-size: 14px; color: #888; margin-top: 5px;">MP4 до 100MB</div>
+            </div>
+            <div class="file-info" id="video-info"></div>
+            
+            <label for="language-select">Язык перевода:</label>
+            <select id="language-select">
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇺🇸 Английский</option>
+                <option value="es">🇪🇸 Испанский</option>
+                <option value="de">🇩🇪 Немецкий</option>
+                <option value="fr">🇫🇷 Французский</option>
+            </select>
+        </div>
+        
+        <button class="submit-btn" id="submit-btn">
+            <span>🚀</span>
+            Создать видео
+        </button>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <div>Генерирую видео... Это может занять до 2 минут</div>
+        </div>
+        
+        <div class="status-message" id="success-message">
+            ✅ Видео успешно создано! Оно будет отправлено вам в чат.
+        </div>
+        
+        <div class="status-message" id="error-message">
+            ❌ Произошла ошибка. Попробуйте еще раз.
+        </div>
+    </div>
+    
+    <script>
+        // Telegram WebApp initialization
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.setText("Готово");
+        
+        // State
+        let currentType = 'video-agent';
+        let selectedImageFile = null;
+        let selectedVideoFile = null;
+        
+        // DOM Elements
+        const typeButtons = document.querySelectorAll('.type-btn');
+        const formSections = document.querySelectorAll('.form-section');
+        const submitBtn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        
+        // File upload handlers
+        document.getElementById('image-upload').addEventListener('click', () => {
+            tg.showPopup({
+                title: 'Загрузка фото',
+                message: 'В Telegram WebApp используйте встроенную загрузку файлов',
+                buttons: [{ type: 'ok' }]
+            });
+        });
+        
+        document.getElementById('video-upload').addEventListener('click', () => {
+            tg.showPopup({
+                title: 'Загрузка видео',
+                message: 'В Telegram WebApp используйте встроенную загрузку файлов',
+                buttons: [{ type: 'ok' }]
+            });
+        });
+        
+        // Type selection
+        typeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                typeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                formSections.forEach(section => section.classList.remove('active'));
+                
+                currentType = btn.dataset.type;
+                document.getElementById(`${currentType}-form`).classList.add('active');
+                
+                // Clear file selections when switching types
+                selectedImageFile = null;
+                selectedVideoFile = null;
+                document.getElementById('image-info').classList.remove('show');
+                document.getElementById('video-info').classList.remove('show');
+            });
+        });
+        
+        // Form submission
+        submitBtn.addEventListener('click', async () => {
+            // Validate form
+            let isValid = true;
+            let error = '';
+            
+            if (currentType === 'video-agent') {
+                const text = document.getElementById('video-text').value.trim();
+                if (!text) {
+                    isValid = false;
+                    error = 'Введите текст для видео';
+                } else if (text.length > 2000) {
+                    isValid = false;
+                    error = 'Текст слишком длинный (макс. 2000 символов)';
+                }
+            } else if (currentType === 'image-to-video') {
+                const text = document.getElementById('image-text').value.trim();
+                if (!text) {
+                    isValid = false;
+                    error = 'Введите текст для озвучки';
+                }
+                if (!selectedImageFile) {
+                    isValid = false;
+                    error = 'Загрузите фото';
+                }
+            } else if (currentType === 'translate') {
+                if (!selectedVideoFile) {
+                    isValid = false;
+                    error = 'Загрузите видео';
+                }
+            }
+            
+            if (!isValid) {
+                tg.showPopup({
+                    title: 'Ошибка',
+                    message: error,
+                    buttons: [{ type: 'ok' }]
+                });
+                return;
+            }
+            
+            // Prepare data for Telegram WebApp
+            const formData = {
+                type: currentType,
+                text: '',
+                file_id: null,
+                settings: {}
+            };
+            
+            switch (currentType) {
+                case 'video-agent':
+                    formData.text = document.getElementById('video-text').value.trim();
+                    formData.settings.avatar = document.getElementById('avatar-select').value;
+                    formData.settings.orientation = 'portrait';
+                    break;
+                    
+                case 'image-to-video':
+                    formData.text = document.getElementById('image-text').value.trim();
+                    formData.file_id = selectedImageFile ? selectedImageFile.id : 'demo_file_id';
+                    formData.settings.voice = 'default';
+                    break;
+                    
+                case 'translate':
+                    formData.file_id = selectedVideoFile ? selectedVideoFile.id : 'demo_file_id';
+                    formData.settings.language = document.getElementById('language-select').value;
+                    break;
+            }
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loading.classList.add('show');
+            successMessage.classList.remove('success');
+            errorMessage.classList.remove('error');
+            
+            // Simulate processing delay (in real app, this would be handled by backend)
+            setTimeout(() => {
+                // In production: Send data via Telegram WebApp
+                // tg.sendData(JSON.stringify(formData));
+                
+                // For demo purposes, show success
+                loading.classList.remove('show');
+                successMessage.classList.add('success');
+                submitBtn.disabled = false;
+                
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    successMessage.classList.remove('success');
+                    if (currentType === 'video-agent') {
+                        document.getElementById('video-text').value = '';
+                    } else if (currentType === 'image-to-video') {
+                        document.getElementById('image-text').value = '';
+                        selectedImageFile = null;
+                        document.getElementById('image-info').classList.remove('show');
+                    } else if (currentType === 'translate') {
+                        selectedVideoFile = null;
+                        document.getElementById('video-info').classList.remove('show');
+                    }
+                }, 3000);
+                
+            }, 2000);
+        });
+        
+        // Telegram WebApp event handlers
+        tg.onEvent('webAppDataReceived', (event) => {
+            console.log('WebApp data received:', event);
+        });
+        
+        // Initialize
+        console.log('HeyGen WebApp initialized. Current user:', tg.initDataUnsafe.user);
+        
+        // Demo mode notice
+        if (!tg.initDataUnsafe.user) {
+            tg.showPopup({
+                title: 'Демо режим',
+                message: 'Это демо-версия WebApp. В реальном приложении здесь будет загрузка файлов через Telegram.',
+                buttons: [{ type: 'ok' }]
+            });
+        }
+    </script>
+</body>
+</html>
