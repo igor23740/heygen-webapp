@@ -20,6 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 
 .nav{padding:16px 16px 20px;display:flex;flex-direction:column;gap:10px}
 
+/* ===== КНОПКИ НАВИГАЦИИ ===== */
 .nav-btn{
   display:flex;align-items:center;justify-content:center;gap:10px;
   width:100%;padding:16px 14px;
@@ -30,36 +31,56 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   position:relative;overflow:hidden;
   -webkit-user-select:none;user-select:none;
   touch-action:manipulation;
-  /* БЕЗ transition в idle — чтобы подсветка появлялась МГНОВЕННО */
   box-shadow:0 2px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04);
-  transform:translateY(0);
+  transform:translateY(0) scale(1);
+  /* Плавный возврат в покой */
+  transition:transform .3s cubic-bezier(.4,0,.2,1),
+             box-shadow .3s cubic-bezier(.4,0,.2,1),
+             border-color .3s ease;
 }
 .nav-btn::before{
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,var(--accent),var(--accent-dark));
   opacity:0;border-radius:var(--radius);
-  /* transition только на угасание */
   transition:opacity .3s ease-out;
 }
 .nav-btn .nav-btn-text{position:relative;z-index:1;transition:color .3s ease-out}
 
-/* ====== НАЖАТА — полная подсветка МГНОВЕННО ====== */
+/* --- Наведение курсора (десктоп) — приподнимается --- */
+.nav-btn.hovered{
+  transform:translateY(-3px) scale(1);
+  box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05);
+  border-color:#3a3a44;
+}
+
+/* --- Нажата / палец на кнопке — вдавливается + подсветка --- */
+.nav-btn.pressed{
+  transform:translateY(1px) scale(.97);
+  box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.02);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+
+/* --- Акцентная подсветка (мгновенно загорается) --- */
 .nav-btn.lit{
   border-color:var(--accent);
-  box-shadow:0 4px 20px var(--accent-glow),0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
-  transform:translateY(-2px);
+  box-shadow:0 4px 24px var(--accent-glow),0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .nav-btn.lit::before{
   opacity:1;
-  transition:opacity 0s; /* мгновенно загорается */
+  transition:opacity 0s;
 }
 .nav-btn.lit .nav-btn-text{
   color:#fff;
-  transition:color 0s; /* мгновенно белый */
+  transition:color 0s;
 }
 
-/* Когда .lit убирается — плавное угасание через transition в базовом состоянии */
+/* Комбинация: lit + pressed */
+.nav-btn.lit.pressed{
+  transform:translateY(1px) scale(.97);
+  box-shadow:0 1px 6px var(--accent-glow),0 1px 3px rgba(0,0,0,.3);
+}
 
+/* ===== SECTIONS ===== */
 .section{padding:48px 20px 40px;opacity:0;transform:translateY(30px);transition:all .55s cubic-bezier(.25,.46,.45,.94)}
 .section.visible{opacity:1;transform:translateY(0)}
 .section-label{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(46,196,182,.1);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:16px}
@@ -157,24 +178,10 @@ function getArrowThreshold() {
   return first ? first.offsetTop - 100 : 300;
 }
 
-/* ==========================================================
-   КНОПКИ: подсветка при нажатии, угасание при отпускании.
-   Используем touchstart/touchend для мобильных (0 задержки)
-   и mousedown/mouseup для десктопа.
-   ========================================================== */
-
+/* ===== КНОПКИ ===== */
 btns.forEach(b => {
 
-  let navigated = false; // флаг, чтобы не дублировать навигацию
-
-  function lightOn() {
-    b.classList.add('lit');
-    navigated = false;
-  }
-
-  function lightOff() {
-    b.classList.remove('lit');
-  }
+  let navigated = false;
 
   function navigate() {
     if (navigated) return;
@@ -187,32 +194,48 @@ btns.forEach(b => {
   }
 
   /* --- Touch (мобильные) --- */
-  b.addEventListener('touchstart', () => { lightOn(); }, { passive: true });
+  b.addEventListener('touchstart', () => {
+    navigated = false;
+    b.classList.add('lit', 'pressed');
+  }, { passive: true });
+
   b.addEventListener('touchend', (e) => {
-    e.preventDefault(); // убиваем ghost click
+    e.preventDefault();
+    b.classList.remove('pressed');
     navigate();
-    // оставляем подсветку на 400 мс после отпускания, потом плавно гасим
-    setTimeout(lightOff, 400);
+    setTimeout(() => { b.classList.remove('lit'); }, 400);
   });
-  b.addEventListener('touchcancel', () => { lightOff(); });
+
+  b.addEventListener('touchcancel', () => {
+    b.classList.remove('lit', 'pressed');
+  });
 
   /* --- Mouse (десктоп) --- */
-  b.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return; // только левая кнопка
-    lightOn();
+  b.addEventListener('mouseenter', () => {
+    b.classList.add('hovered');
   });
+
+  b.addEventListener('mouseleave', () => {
+    b.classList.remove('hovered', 'lit', 'pressed');
+  });
+
+  b.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    navigated = false;
+    b.classList.add('lit', 'pressed');
+  });
+
   b.addEventListener('mouseup', (e) => {
     if (e.button !== 0) return;
+    b.classList.remove('pressed');
     navigate();
-    setTimeout(lightOff, 400);
+    setTimeout(() => { b.classList.remove('lit'); }, 400);
   });
-  b.addEventListener('mouseleave', () => { lightOff(); });
 
-  /* --- Глушим стандартный click --- */
   b.addEventListener('click', (e) => { e.preventDefault(); });
 });
 
-/* ===== Scroll-to-top arrow ===== */
+/* ===== Scroll-to-top ===== */
 scrollTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
