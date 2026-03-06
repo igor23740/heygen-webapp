@@ -31,13 +31,11 @@
     -webkit-font-smoothing:antialiased;
   }
 
-  /* Mobile-first wrapper */
   .app{
     max-width:430px;
     margin:0 auto;
     min-height:100vh;
     position:relative;
-    overflow:hidden;
   }
 
   /* ===== HERO ===== */
@@ -113,7 +111,6 @@
   .nav-btn-text,.nav-btn-icon{position:relative;z-index:1;transition:color 0.3s}
   .nav-btn-icon{width:20px;height:20px;flex-shrink:0}
 
-  /* Touch feedback */
   .nav-btn:active{transform:scale(0.97)}
 
   /* ===== SECTIONS ===== */
@@ -141,7 +138,6 @@
     margin-bottom:24px;
   }
 
-  /* CTA */
   .cta{
     display:inline-flex;align-items:center;gap:8px;
     padding:13px 24px;
@@ -155,7 +151,6 @@
   .cta svg{width:16px;height:16px;transition:transform 0.2s}
   .cta:active svg{transform:translateX(2px)}
 
-  /* Placeholder */
   .placeholder{
     width:100%;aspect-ratio:16/10;
     background:var(--surface);
@@ -167,13 +162,11 @@
   }
   .placeholder svg{width:36px;height:36px;opacity:0.35}
 
-  /* Divider */
   .divider{
     height:1px;margin:0 20px;
     background:linear-gradient(90deg,transparent,var(--card-border),transparent);
   }
 
-  /* ===== FREE TOKENS BLOCK ===== */
   .tokens-block{
     margin:40px 16px 48px;padding:18px 20px;
     background:var(--surface);
@@ -190,22 +183,55 @@
     font-size:13px;color:var(--text-dim);line-height:1.55;
   }
 
-  /* scrollbar hide */
+  /* ===== SCROLL-TO-TOP ARROW ===== */
+  .scroll-top{
+    position:fixed;
+    bottom:24px;
+    width:44px;height:44px;
+    border-radius:50%;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    z-index:200;
+    opacity:0;
+    transform:translateY(16px) scale(0.8);
+    pointer-events:none;
+    transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+    -webkit-user-select:none;user-select:none;
+  }
+  .scroll-top.show{
+    opacity:1;
+    transform:translateY(0) scale(1);
+    pointer-events:auto;
+  }
+  .scroll-top:active{
+    transform:scale(0.9);
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .scroll-top svg{
+    width:20px;height:20px;
+    color:var(--accent);
+    transition:color 0.2s;
+  }
+  .scroll-top:active svg{color:#000}
+
   ::-webkit-scrollbar{width:0;height:0}
 
-  /* animations */
   @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   .hero{animation:rise .6s ease-out}
   .nav{animation:rise .6s ease-out .1s both}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="app">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="top">
     <div class="hero-logo">🎬</div>
-    <h1>VideoGenie <br>теперь твоя<br><span class="accent-word">суперсила</span></h1>
+    <h1>AI-видео —<br>теперь твоя<br><span class="accent-word">суперсила</span></h1>
     <p>Создавай маркетинговые, обучающие и продающие видео из единого рабочего пространства — быстро, качественно и без камеры.</p>
   </section>
 
@@ -325,15 +351,36 @@
 
 </div><!-- /app -->
 
+<!-- SCROLL-TO-TOP — привязана к .app через JS -->
+<button class="scroll-top" id="scrollTop">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+
 <script>
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand()}
 
-// --- Nav logic ---
 const nav=document.getElementById('nav');
 const btns=document.querySelectorAll('.nav-btn');
 const sections=document.querySelectorAll('.section');
+const scrollTopBtn=document.getElementById('scrollTop');
+const appEl=document.getElementById('app');
 let active=null;
+
+// Позиционируем стрелку относительно правого края .app
+function positionArrow(){
+  const rect=appEl.getBoundingClientRect();
+  scrollTopBtn.style.left=(rect.right-44-12)+'px';
+}
+positionArrow();
+window.addEventListener('resize',positionArrow);
+
+function getArrowThreshold(){
+  const second=document.getElementById('s-ptv');
+  return second?second.offsetTop-200:600;
+}
 
 btns.forEach(b=>{
   b.addEventListener('click',()=>{
@@ -350,10 +397,14 @@ function setActive(b){
   b.classList.add('active');active=b;
 }
 
-// --- Sticky shadow ---
+scrollTopBtn.addEventListener('click',()=>{
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
 window.addEventListener('scroll',()=>{
   nav.classList.toggle('pinned',window.pageYOffset>80);
   trackSection();
+  scrollTopBtn.classList.toggle('show',window.pageYOffset>=getArrowThreshold());
 },{passive:true});
 
 function trackSection(){
@@ -370,13 +421,11 @@ function trackSection(){
   }
 }
 
-// --- Reveal sections ---
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
 },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
 sections.forEach(s=>obs.observe(s));
 
-// --- CTA ---
 function go(type){
   const d=JSON.stringify({action:'generate',type});
   if(tg){tg.sendData(d)}
