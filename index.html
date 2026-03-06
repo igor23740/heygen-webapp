@@ -379,8 +379,8 @@ const scrollTopBtn=document.getElementById('scrollTop');
 let active=null;
 
 function getArrowThreshold(){
-  const second=document.getElementById('s-ptv');
-  return second?second.offsetTop-200:600;
+  const first=document.getElementById('s-ttv');
+  return first?first.offsetTop-100:300;
 }
 
 btns.forEach(b=>{
