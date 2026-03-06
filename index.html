@@ -36,6 +36,8 @@
     margin:0 auto;
     min-height:100vh;
     position:relative;
+    /* Правый отступ для стрелки */
+    padding-right:0;
   }
 
   /* ===== HERO ===== */
@@ -187,18 +189,20 @@
   .scroll-top{
     position:fixed;
     bottom:24px;
-    width:44px;height:44px;
+    right:6px;
+    width:36px;height:36px;
     border-radius:50%;
-    background:var(--card);
+    background:rgba(30,30,36,0.85);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
     border:1px solid var(--card-border);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
     z-index:200;
     opacity:0;
-    transform:translateY(16px) scale(0.8);
+    transform:translateY(12px) scale(0.8);
     pointer-events:none;
     transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
-    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+    box-shadow:0 2px 12px rgba(0,0,0,0.4);
     -webkit-user-select:none;user-select:none;
   }
   .scroll-top.show{
@@ -207,12 +211,12 @@
     pointer-events:auto;
   }
   .scroll-top:active{
-    transform:scale(0.9);
+    transform:scale(0.85);
     background:var(--accent);
     border-color:var(--accent);
   }
   .scroll-top svg{
-    width:20px;height:20px;
+    width:18px;height:18px;
     color:var(--accent);
     transition:color 0.2s;
   }
@@ -349,14 +353,14 @@
     <p>Каждый день вам начисляются бесплатные токены для генерации. Нажмите «Сгенерировать бесплатно», чтобы использовать их. Когда дневной лимит исчерпан, генерация снова станет доступна на следующие сутки.</p>
   </div>
 
-</div><!-- /app -->
+  <!-- SCROLL-TO-TOP внутри .app -->
+  <button class="scroll-top" id="scrollTop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
 
-<!-- SCROLL-TO-TOP — привязана к .app через JS -->
-<button class="scroll-top" id="scrollTop">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="18 15 12 9 6 15"/>
-  </svg>
-</button>
+</div><!-- /app -->
 
 <script>
 const tg=window.Telegram&&window.Telegram.WebApp;
@@ -369,17 +373,19 @@ const scrollTopBtn=document.getElementById('scrollTop');
 const appEl=document.getElementById('app');
 let active=null;
 
-// Позиционируем стрелку относительно правого края .app
+// Позиционируем стрелку по правому краю .app
 function positionArrow(){
   const rect=appEl.getBoundingClientRect();
-  scrollTopBtn.style.left=(rect.right-44-12)+'px';
+  // 6px отступ от правого края контейнера, внутрь
+  scrollTopBtn.style.right='auto';
+  scrollTopBtn.style.left=(rect.right - 36 - 6)+'px';
 }
 positionArrow();
 window.addEventListener('resize',positionArrow);
 
 function getArrowThreshold(){
   const second=document.getElementById('s-ptv');
-  return second?second.offsetTop-200:600;
+  return second?second.offsetTop - 200:600;
 }
 
 btns.forEach(b=>{
