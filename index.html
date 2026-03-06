@@ -22,7 +22,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 /* ===== NAV ===== */
 .nav{padding:16px 16px 20px;display:flex;flex-direction:column;gap:10px}
 
-/* ===== NAV BUTTONS ===== */
+/* ===== NAV BUTTONS =====
+   НИКАКИХ :hover / :active псевдоклассов!
+   Всё управляется через JS-классы: .hovered, .lit, .pressed
+*/
 .nav-btn{
   display:flex;align-items:center;justify-content:center;gap:10px;
   width:100%;padding:16px 14px;
@@ -30,32 +33,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   background:var(--card);color:var(--text);
   font-size:16px;font-weight:700;
   cursor:pointer;
-  transition:all .3s cubic-bezier(.4,0,.2,1);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
   position:relative;overflow:hidden;
   -webkit-user-select:none;user-select:none;
   box-shadow:0 2px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04);
+  touch-action:manipulation;
 }
 .nav-btn::before{
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,var(--accent),var(--accent-dark));
   opacity:0;transition:opacity .25s;border-radius:var(--radius);
 }
-/* --- Lit state (single class controls everything) --- */
-.nav-btn.lit{
-  border-color:var(--accent);
-  box-shadow:0 4px 20px var(--accent-glow),0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
+.nav-btn .nav-btn-text{position:relative;z-index:1;transition:color .25s}
+
+/* Десктоп: курсор навёлся — слегка приподнять + лёгкая подсветка рамки */
+.nav-btn.hovered{
   transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);
+  border-color:#444;
+}
+
+/* Нажата (палец/клик удерживается) — полная подсветка */
+.nav-btn.lit{
+  border-color:var(--accent)!important;
+  box-shadow:0 4px 20px var(--accent-glow),0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)!important;
+  transform:translateY(-1px);
 }
 .nav-btn.lit::before{opacity:1}
-.nav-btn.lit .nav-btn-text,
-.nav-btn.lit .nav-btn-icon{color:#fff;position:relative;z-index:1}
-/* --- Pressed-in on tap --- */
-.nav-btn.pressed{
+.nav-btn.lit .nav-btn-text{color:#fff}
+
+/* Нажата + вдавлена */
+.nav-btn.lit.pressed{
   transform:translateY(1px) scale(.985)!important;
   box-shadow:0 1px 4px rgba(0,0,0,.3)!important;
-  transition-duration:.08s;
 }
-.nav-btn .nav-btn-text{position:relative;z-index:1}
 
 /* ===== SECTIONS ===== */
 .section{padding:48px 20px 40px;opacity:0;transform:translateY(30px);transition:all .55s cubic-bezier(.25,.46,.45,.94)}
@@ -177,41 +188,67 @@ function getArrowThreshold() {
   return first ? first.offsetTop - 100 : 300;
 }
 
-/* ===== Button highlight logic ===== */
+/* ===== Определяем тач-устройство ===== */
+let isTouchDevice = false;
+window.addEventListener('touchstart', function onFirstTouch() {
+  isTouchDevice = true;
+  window.removeEventListener('touchstart', onFirstTouch);
+}, { passive: true });
+
+/* ===== Button interaction ===== */
 btns.forEach(b => {
-  /* --- Desktop: highlight on hover --- */
-  b.addEventListener('mouseenter', () => { b.classList.add('lit'); });
-  b.addEventListener('mouseleave', () => { b.classList.remove('lit'); b.classList.remove('pressed'); });
 
-  /* --- Touch / pointer: highlight on finger down, navigate on release --- */
-  b.addEventListener('pointerdown', (e) => {
-    b.classList.add('lit');
-    b.classList.add('pressed');
-  });
+  /* --- TOUCH: touchstart → подсветка сразу, touchend → навигация + гашение --- */
+  b.addEventListener('touchstart', (e) => {
+    b.classList.add('lit', 'pressed');
+  }, { passive: true });
 
-  b.addEventListener('pointerup', (e) => {
+  b.addEventListener('touchend', (e) => {
+    e.preventDefault();          // убиваем эмулированный click/mouse*
     b.classList.remove('pressed');
-    /* Navigate */
+    // навигация
     const t = document.getElementById(b.dataset.target);
     if (t) {
       const y = t.getBoundingClientRect().top + window.pageYOffset - 12;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
-    /* Remove highlight after a brief moment so user sees the flash */
-    setTimeout(() => { b.classList.remove('lit'); }, 200);
+    // гасим через 300 мс, чтобы пользователь увидел вспышку
+    setTimeout(() => { b.classList.remove('lit'); }, 300);
   });
 
-  b.addEventListener('pointerleave', () => {
-    b.classList.remove('lit');
+  b.addEventListener('touchcancel', () => {
+    b.classList.remove('lit', 'pressed');
+  });
+
+  /* --- DESKTOP: mouseenter/mouseleave + mousedown/mouseup --- */
+  b.addEventListener('mouseenter', () => {
+    if (isTouchDevice) return;
+    b.classList.add('hovered');
+  });
+
+  b.addEventListener('mouseleave', () => {
+    if (isTouchDevice) return;
+    b.classList.remove('hovered', 'lit', 'pressed');
+  });
+
+  b.addEventListener('mousedown', (e) => {
+    if (isTouchDevice) return;
+    b.classList.add('lit', 'pressed');
+  });
+
+  b.addEventListener('mouseup', (e) => {
+    if (isTouchDevice) return;
     b.classList.remove('pressed');
+    // навигация
+    const t = document.getElementById(b.dataset.target);
+    if (t) {
+      const y = t.getBoundingClientRect().top + window.pageYOffset - 12;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    setTimeout(() => { b.classList.remove('lit'); }, 300);
   });
 
-  b.addEventListener('pointercancel', () => {
-    b.classList.remove('lit');
-    b.classList.remove('pressed');
-  });
-
-  /* Prevent default click so we don't double-fire */
+  /* --- Глушим стандартный click, чтобы не было дублей --- */
   b.addEventListener('click', (e) => { e.preventDefault(); });
 });
 
