@@ -18,7 +18,7 @@
         }
 
         body {
-            background: #0a0a0f;
+            background: #121212;
             color: #f0f0f0;
             overflow-x: hidden;
         }
@@ -39,8 +39,8 @@
             align-items: center;
             text-align: center;
             padding: 40px 20px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
-            border-bottom: 1px solid #222233;
+            background: linear-gradient(135deg, #1a1a2e 0%, #121212 100%);
+            border-bottom: 1px solid #2a2a2a;
         }
 
         .logo {
@@ -60,42 +60,69 @@
             line-height: 1.6;
         }
 
-        /* Main buttons */
+        /* Main buttons – HeyGen style */
         .button-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 25px;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             margin-top: 40px;
         }
 
         .main-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px 20px;
-            color: #fff;
-            font-size: 1.3rem;
-            font-weight: 600;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border: none;
+            border-radius: 24px;
+            padding: 28px 24px;
+            color: #333;
+            font-size: 1.4rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-decoration: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15),
+                        0 6px 10px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
         }
 
         .main-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25),
+                        0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-btn:hover::before {
+            left: 100%;
         }
 
         .main-btn .icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
+            font-size: 3rem;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .main-btn .subtext {
+            font-size: 0.95rem;
+            color: #666;
+            margin-top: 10px;
+            font-weight: 500;
         }
 
         /* Sections */
@@ -103,8 +130,8 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 80px 20px;
-            border-bottom: 1px solid #222233;
+            padding: 100px 20px;
+            border-bottom: 1px solid #2a2a2a;
             scroll-margin-top: 20px;
         }
 
@@ -115,23 +142,24 @@
         }
 
         .section h2 {
-            font-size: 3rem;
+            font-size: 3.2rem;
             margin-bottom: 30px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .section p {
-            font-size: 1.2rem;
-            color: #b0b0d0;
-            line-height: 1.8;
-            margin-bottom: 40px;
+            font-size: 1.25rem;
+            color: #c0c0e0;
+            line-height: 1.9;
+            margin-bottom: 50px;
         }
 
         /* Form elements */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             text-align: left;
             max-width: 500px;
             margin-left: auto;
@@ -140,29 +168,32 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #d0d0f0;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #e0e0ff;
+            font-size: 1.1rem;
         }
 
         textarea, select, input[type="text"] {
             width: 100%;
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
             color: #fff;
-            font-size: 1rem;
-            transition: border 0.3s;
+            font-size: 1.05rem;
+            transition: all 0.3s;
         }
 
         textarea:focus, select:focus, input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
         }
 
         textarea {
-            min-height: 150px;
+            min-height: 160px;
             resize: vertical;
         }
 
@@ -171,85 +202,121 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 15px;
-            padding: 20px 40px;
-            font-size: 1.3rem;
-            font-weight: 600;
+            border-radius: 18px;
+            padding: 22px 45px;
+            font-size: 1.4rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 20px;
+            margin-top: 25px;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
         }
 
         .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .action-btn:hover::after {
+            left: 100%;
         }
 
         /* Status & Log */
         .status {
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 30px;
+            padding: 22px;
+            border-radius: 18px;
+            margin-top: 35px;
             display: none;
             max-width: 500px;
             margin-left: auto;
             margin-right: auto;
+            backdrop-filter: blur(10px);
         }
 
         .status.success {
-            background: rgba(40, 167, 69, 0.15);
+            background: rgba(40, 167, 69, 0.18);
             border: 1px solid #28a745;
             color: #b8f7c6;
             display: block;
         }
 
         .status.error {
-            background: rgba(220, 53, 69, 0.15);
+            background: rgba(220, 53, 69, 0.18);
             border: 1px solid #dc3545;
             color: #f8c6cb;
             display: block;
         }
 
         .log {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid #333344;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #444466;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 25px;
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #a0e0a0;
-            max-height: 200px;
+            max-height: 220px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
+            backdrop-filter: blur(5px);
         }
 
         /* Footer */
         .footer {
-            padding: 40px 20px;
+            padding: 50px 20px;
             text-align: center;
             color: #8888aa;
-            font-size: 0.9rem;
-            border-top: 1px solid #222233;
+            font-size: 0.95rem;
+            border-top: 1px solid #2a2a2a;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .button-grid {
                 grid-template-columns: 1fr;
-                max-width: 400px;
+                max-width: 450px;
+                gap: 20px;
+            }
+
+            .main-btn {
+                padding: 24px 20px;
+                font-size: 1.3rem;
+            }
+
+            .main-btn .icon {
+                font-size: 2.8rem;
             }
 
             .section h2 {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
             }
 
             .section p {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+
+            .action-btn {
+                padding: 20px 35px;
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -265,22 +332,27 @@
                 <a href="#video-from-text" class="main-btn">
                     <span class="icon">📝</span>
                     Видео из текста
+                    <span class="subtext">Текст → видео с аватаром</span>
                 </a>
                 <a href="#video-from-photo" class="main-btn">
                     <span class="icon">📸</span>
                     Видео из фото
+                    <span class="subtext">Оживите фото с озвучкой</span>
                 </a>
                 <a href="#translate-video" class="main-btn">
                     <span class="icon">🌐</span>
                     Перевести видео
+                    <span class="subtext">Перевод речи с сохранением голоса</span>
                 </a>
                 <a href="#settings" class="main-btn">
                     <span class="icon">⚙️</span>
                     Настройки
+                    <span class="subtext">API‑ключи, история, предпочтения</span>
                 </a>
                 <a href="#about" class="main-btn">
                     <span class="icon">ℹ️</span>
                     О боте
+                    <span class="subtext">Как работает, контакты, инструкции</span>
                 </a>
             </div>
         </div>
@@ -328,7 +400,7 @@
 
             <div class="form-group">
                 <label>Загрузка фото (в реальном WebApp здесь будет input type="file")</label>
-                <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px; text-align: center; color: #8888cc;">
+                <div style="padding: 35px; background: rgba(255,255,255,0.05); border-radius: 18px; text-align: center; color: #8888cc; border: 2px dashed rgba(255,255,255,0.1);">
                     📸 В рабочем режиме здесь будет загрузка фото
                 </div>
             </div>
@@ -360,7 +432,7 @@
 
             <div class="form-group">
                 <label>Загрузка видео (в реальном WebApp здесь будет input type="file")</label>
-                <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px; text-align: center; color: #8888cc;">
+                <div style="padding: 35px; background: rgba(255,255,255,0.05); border-radius: 18px; text-align: center; color: #8888cc; border: 2px dashed rgba(255,255,255,0.1);">
                     🎥 В рабочем режиме здесь будет загрузка видео
                 </div>
             </div>
@@ -379,8 +451,8 @@
         <div class="section-content">
             <h2>⚙️ Настройки</h2>
             <p>Здесь будут настройки API‑ключей, предпочтений, истории запросов.</p>
-            <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px;">
-                <p style="color: #aaaacc;">Настройки появятся после подключения workflow.</p>
+            <div style="padding: 40px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 2px solid rgba(255,255,255,0.08);">
+                <p style="color: #aaaacc; font-size: 1.1rem;">Настройки появятся после подключения workflow.</p>
             </div>
         </div>
     </section>
@@ -391,23 +463,23 @@
             <h2>ℹ️ О боте</h2>
             <p><strong>VideoGenie</strong> — это Telegram‑бот, создающий AI‑видео через HeyGen (Fal API).</p>
             <p>Возможности:</p>
-            <ul style="text-align: left; max-width: 500px; margin: 20px auto; color: #b0b0d0; line-height: 1.8;">
+            <ul style="text-align: left; max-width: 500px; margin: 25px auto; color: #c0c0e0; line-height: 1.9; font-size: 1.1rem;">
                 <li>📝 Текст → видео с аватаром</li>
                 <li>📸 Фото → оживлённое видео</li>
                 <li>🌐 Перевод видео с сохранением голоса</li>
                 <li>⚙️ Интеграция с n8n + Fal API</li>
                 <li>🚀 Автоматическая отправка в Telegram</li>
             </ul>
-            <p style="margin-top: 30px; color: #8888aa;">Бот работает на базе OpenClaw, n8n и HeyGen.</p>
+            <p style="margin-top: 35px; color: #8888aa; font-size: 1.05rem;">Бот работает на базе OpenClaw, n8n и HeyGen.</p>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
             <p>VideoGenie WebApp • Стиль HeyGen • 2026</p>
-            <p style="margin-top: 10px; font-size: 0.8rem; color: #666688;">
-                Открыть в Telegram: <a href="https://t.me/vidlogenie_bot" style="color: #667eea;">@vidlogenie_bot</a> •
-                <a href="#top" style="color: #a0a0e0;">Наверх</a>
+            <p style="margin-top: 15px; font-size: 0.9rem; color: #666688;">
+                Открыть в Telegram: <a href="https://t.me/vidlogenie_bot" style="color: #667eea; text-decoration: none; font-weight: 600;">@vidlogenie_bot</a> •
+                <a href="#top" style="color: #a0a0e0; text-decoration: none;">Наверх ↑</a>
             </p>
         </div>
     </footer>
@@ -486,7 +558,7 @@
 
         // === Инициализация ===
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('VideoGenie WebApp loaded (HeyGen style)');
+            console.log('VideoGenie WebApp v2 loaded (HeyGen style refined)');
             
             // Плавный скролл для якорных ссылок
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
