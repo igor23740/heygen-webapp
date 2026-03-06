@@ -3,497 +3,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HeyGen WebApp (Fixed)</title>
+    <title>VideoGenie — HeyGen‑style WebApp</title>
     <style>
+        /* Reset & Base */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a0a0f;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header / Hero */
+        .hero {
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+            border-bottom: 1px solid #222233;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* Main buttons */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+        }
+
+        .main-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px 20px;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
         }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 500px;
-            padding: 30px;
-            margin-bottom: 20px;
+
+        .main-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            transform: translateY(-5px);
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
+
+        .main-btn .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Sections */
+        .section {
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            gap: 10px;
+            padding: 80px 20px;
+            border-bottom: 1px solid #222233;
+            scroll-margin-top: 20px;
         }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        
-        .mode-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
+
+        .section-content {
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
         }
-        
-        .mode-btn:hover {
-            border-color: #764ba2;
+
+        .section h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        .mode-btn.active {
-            background: #764ba2;
-            color: white;
-            border-color: #764ba2;
+
+        .section p {
+            font-size: 1.2rem;
+            color: #b0b0d0;
+            line-height: 1.8;
+            margin-bottom: 40px;
         }
-        
-        .form-section {
-            display: none;
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .form-section.active {
+
+        .form-group label {
             display: block;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            color: #444;
+            color: #d0d0f0;
         }
-        
-        textarea, select {
+
+        textarea, select, input[type="text"] {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            transition: border 0.3s;
         }
-        
+
+        textarea:focus, select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         textarea {
-            min-height: 100px;
+            min-height: 150px;
             resize: vertical;
         }
-        
-        textarea:focus, select:focus {
-            outline: none;
-            border-color: #764ba2;
-        }
-        
-        .button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Action button */
+        .action-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 1.3rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .debug-panel {
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        
-        .debug-title {
-            color: #495057;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
+            margin-top: 20px;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
         }
-        
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Status & Log */
+        .status {
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .status.success {
+            background: rgba(40, 167, 69, 0.15);
+            border: 1px solid #28a745;
+            color: #b8f7c6;
+            display: block;
+        }
+
+        .status.error {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid #dc3545;
+            color: #f8c6cb;
+            display: block;
+        }
+
         .log {
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333344;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #a0e0a0;
             max-height: 200px;
             overflow-y: auto;
-            font-size: 12px;
             white-space: pre-wrap;
             word-break: break-all;
         }
-        
-        .log.info {
-            border-left: 4px solid #17a2b8;
+
+        /* Footer */
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+            color: #8888aa;
+            font-size: 0.9rem;
+            border-top: 1px solid #222233;
         }
-        
-        .log.success {
-            border-left: 4px solid #28a745;
-        }
-        
-        .log.error {
-            border-left: 4px solid #dc3545;
-        }
-        
-        .log.warning {
-            border-left: 4px solid #ffc107;
-        }
-        
-        .status {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            display: none;
-        }
-        
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-        
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .button-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .section h2 {
+                font-size: 2.2rem;
+            }
+
+            .section p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎬 HeyGen WebApp (Fixed)</h1>
-        <p class="subtitle">Этот WebApp работает в браузере и отправляет данные напрямую на webhook</p>
-        
-        <div class="mode-selector">
-            <button class="mode-btn active" data-mode="video-agent">Видео из текста</button>
-            <button class="mode-btn" data-mode="image-to-video">Видео из фото</button>
-            <button class="mode-btn" data-mode="translate">Перевести видео</button>
-        </div>
-        
-        <!-- Video Agent Form -->
-        <div class="form-section active" id="video-agent-form">
-            <label for="text-input">Текст для видео:</label>
-            <textarea id="text-input" placeholder="Введите текст для видео... (макс. 2000 символов)" maxlength="2000">Привет, это тестовое видео из WebApp</textarea>
+    <!-- Hero / Main screen -->
+    <section class="hero" id="top">
+        <div class="container">
+            <h1 class="logo">🎬 VideoGenie</h1>
+            <p class="tagline">Создавайте AI‑видео одним касанием. Текст, фото, перевод — всё в одном боте.</p>
             
-            <label for="avatar-select">Аватар:</label>
-            <select id="avatar-select">
-                <option value="Adriana SuitSofa Front">👩 Adriana (стандартный)</option>
-                <option value="Ethan SuitSofa Front">👨 Ethan (мужчина)</option>
-                <option value="Lena Business Front">👩‍💼 Lena (бизнес)</option>
-            </select>
-        </div>
-        
-        <!-- Image to Video Form -->
-        <div class="form-section" id="image-to-video-form">
-            <label for="image-text">Текст для озвучки:</label>
-            <textarea id="image-text" placeholder="Введите текст для озвучки фото..." maxlength="2000">Это фото с описанием</textarea>
-            
-            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center; color: #6c757d; margin-bottom: 20px;">
-                📸 В реальном WebApp здесь была бы загрузка фото
+            <div class="button-grid">
+                <a href="#video-from-text" class="main-btn">
+                    <span class="icon">📝</span>
+                    Видео из текста
+                </a>
+                <a href="#video-from-photo" class="main-btn">
+                    <span class="icon">📸</span>
+                    Видео из фото
+                </a>
+                <a href="#translate-video" class="main-btn">
+                    <span class="icon">🌐</span>
+                    Перевести видео
+                </a>
+                <a href="#settings" class="main-btn">
+                    <span class="icon">⚙️</span>
+                    Настройки
+                </a>
+                <a href="#about" class="main-btn">
+                    <span class="icon">ℹ️</span>
+                    О боте
+                </a>
             </div>
         </div>
-        
-        <!-- Translate Form -->
-        <div class="form-section" id="translate-form">
-            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center; color: #6c757d; margin-bottom: 20px;">
-                🎥 В реальном WebApp здесь была бы загрузка видео
-            </div>
+    </section>
+
+    <!-- Video from Text -->
+    <section class="section" id="video-from-text">
+        <div class="section-content">
+            <h2>Видео из текста</h2>
+            <p>Напишите сценарий — бот создаст видео с выбранным аватаром, голосом и фонами.</p>
             
-            <label for="language-select">Язык перевода:</label>
-            <select id="language-select">
-                <option value="ru">🇷🇺 Русский</option>
-                <option value="en">🇺🇸 Английский</option>
-                <option value="es">🇪🇸 Испанский</option>
-            </select>
+            <div class="form-group">
+                <label for="text-input">Текст сценария (до 2000 символов):</label>
+                <textarea id="text-input" placeholder="Пример: Привет! Я расскажу о нашем новом продукте...">Создайте видео о возможностях AI‑видео.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="avatar-select">Аватар:</label>
+                <select id="avatar-select">
+                    <option value="Adriana SuitSofa Front">👩 Adriana (стандартный)</option>
+                    <option value="Ethan SuitSofa Front">👨 Ethan (мужчина)</option>
+                    <option value="Lena Business Front">👩‍💼 Lena (бизнес)</option>
+                </select>
+            </div>
+
+            <button class="action-btn" onclick="sendRequest('video-agent')">
+                <span>🚀</span> Создать видео
+            </button>
+
+            <div class="status" id="status-video-text"></div>
+            <div class="log" id="log-video-text">Готов к отправке...</div>
         </div>
-        
-        <button class="button" id="send-btn">🚀 Отправить данные на Webhook</button>
-        
-        <div class="status" id="status"></div>
-    </div>
-    
-    <div class="container debug-panel">
-        <div class="debug-title">
-            <span>🐛</span> Панель отладки (логи здесь и в Console браузера)
+    </section>
+
+    <!-- Video from Photo -->
+    <section class="section" id="video-from-photo">
+        <div class="section-content">
+            <h2>Видео из фото</h2>
+            <p>Загрузите фото и текст — AI оживит изображение, синхронизировав губы с речью.</p>
+            
+            <div class="form-group">
+                <label for="photo-text">Текст для озвучки:</label>
+                <textarea id="photo-text" placeholder="Что должен сказать персонаж на фото...">Это фото демонстрирует возможности AI‑анимации.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Загрузка фото (в реальном WebApp здесь будет input type="file")</label>
+                <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px; text-align: center; color: #8888cc;">
+                    📸 В рабочем режиме здесь будет загрузка фото
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="sendRequest('image-to-video')">
+                <span>🎬</span> Оживить фото
+            </button>
+
+            <div class="status" id="status-video-photo"></div>
+            <div class="log" id="log-video-photo">Готов к отправке...</div>
         </div>
-        <div class="log info" id="debug-log">Готов к работе...</div>
-        <div style="display: flex; gap: 10px;">
-            <button class="button" id="clear-log" style="padding: 10px; font-size: 14px;">Очистить логи</button>
-            <button class="button" id="test-webhook" style="padding: 10px; font-size: 14px;">Тест Webhook</button>
+    </section>
+
+    <!-- Translate Video -->
+    <section class="section" id="translate-video">
+        <div class="section-content">
+            <h2>Перевести видео</h2>
+            <p>Загрузите видео — бот переведёт речь на выбранный язык, сохранив голос и синхронизацию.</p>
+            
+            <div class="form-group">
+                <label for="language-select">Язык перевода:</label>
+                <select id="language-select">
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="en">🇺🇸 Английский</option>
+                    <option value="es">🇪🇸 Испанский</option>
+                    <option value="de">🇩🇪 Немецкий</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Загрузка видео (в реальном WebApp здесь будет input type="file")</label>
+                <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px; text-align: center; color: #8888cc;">
+                    🎥 В рабочем режиме здесь будет загрузка видео
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="sendRequest('translate')">
+                <span>🌐</span> Перевести видео
+            </button>
+
+            <div class="status" id="status-translate"></div>
+            <div class="log" id="log-translate">Готов к отправке...</div>
         </div>
-    </div>
-    
+    </section>
+
+    <!-- Settings -->
+    <section class="section" id="settings">
+        <div class="section-content">
+            <h2>⚙️ Настройки</h2>
+            <p>Здесь будут настройки API‑ключей, предпочтений, истории запросов.</p>
+            <div style="padding: 30px; background: rgba(255,255,255,0.03); border-radius: 15px;">
+                <p style="color: #aaaacc;">Настройки появятся после подключения workflow.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+        <div class="section-content">
+            <h2>ℹ️ О боте</h2>
+            <p><strong>VideoGenie</strong> — это Telegram‑бот, создающий AI‑видео через HeyGen (Fal API).</p>
+            <p>Возможности:</p>
+            <ul style="text-align: left; max-width: 500px; margin: 20px auto; color: #b0b0d0; line-height: 1.8;">
+                <li>📝 Текст → видео с аватаром</li>
+                <li>📸 Фото → оживлённое видео</li>
+                <li>🌐 Перевод видео с сохранением голоса</li>
+                <li>⚙️ Интеграция с n8n + Fal API</li>
+                <li>🚀 Автоматическая отправка в Telegram</li>
+            </ul>
+            <p style="margin-top: 30px; color: #8888aa;">Бот работает на базе OpenClaw, n8n и HeyGen.</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>VideoGenie WebApp • Стиль HeyGen • 2026</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #666688;">
+                Открыть в Telegram: <a href="https://t.me/vidlogenie_bot" style="color: #667eea;">@vidlogenie_bot</a> •
+                <a href="#top" style="color: #a0a0e0;">Наверх</a>
+            </p>
+        </div>
+    </footer>
+
     <script>
-        // === КОНФИГУРАЦИЯ ===
-        const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/heigen-logging';
-        // Замени на свой webhook URL, если нужно
+        // === Конфигурация ===
+        const BOT_USERNAME = 'vidlogenie_bot';
         
-        // === ЭМУЛЯЦИЯ Telegram WebApp SDK ===
-        const Telegram = {
-            WebApp: {
-                initData: 'query_id=AAHdF6IQAAAAAJ0MhCIhBKmN&user=%7B%22id%22%3A371324849%2C%22first_name%22%3A%22Big%2AOracle%22%2C%22username%22%3A%22BigOracle%22%7D&auth_date=1772743604&hash=abc123',
-                initDataUnsafe: {
-                    user: { id: 371324849, first_name: 'Big*Oracle', username: 'BigOracle' }
-                },
-                sendData: function(data) {
-                    console.log('📤 Telegram.WebApp.sendData() called with:', data);
-                    // В реальном Telegram данные отправляются автоматически
-                    // Здесь эмулируем отправку через fetch
-                    sendToWebhook(data);
-                },
-                ready: function() { console.log('✅ Telegram.WebApp.ready()'); },
-                expand: function() { console.log('📱 Telegram.WebApp.expand()'); }
-            }
-        };
-        
-        // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
-        let currentMode = 'video-agent';
-        let logEntries = [];
-        
-        // === DOM ЭЛЕМЕНТЫ ===
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        const formSections = document.querySelectorAll('.form-section');
-        const sendBtn = document.getElementById('send-btn');
-        const debugLog = document.getElementById('debug-log');
-        const statusDiv = document.getElementById('status');
-        const clearLogBtn = document.getElementById('clear-log');
-        const testWebhookBtn = document.getElementById('test-webhook');
-        
-        // === ФУНКЦИИ ЛОГИРОВАНИЯ ===
-        function addLog(message, type = 'info') {
+        // === Функции логирования ===
+        function logToElement(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
             const timestamp = new Date().toLocaleTimeString();
-            const entry = `[${timestamp}] ${message}`;
-            logEntries.push({ message: entry, type });
-            
-            // Обновляем панель логов
-            debugLog.textContent = logEntries.map(e => e.message).join('\n');
-            debugLog.className = `log ${type}`;
-            
-            // Также в консоль браузера
-            console.log(`[${type.toUpperCase()}] ${message}`);
+            el.textContent = `[${timestamp}] ${message}\n` + el.textContent;
+            console.log(`[${type}] ${message}`);
         }
-        
-        function clearLog() {
-            logEntries = [];
-            debugLog.textContent = 'Логи очищены';
-            debugLog.className = 'log info';
+
+        function showStatus(elementId, message, type = 'success') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `status ${type}`;
+            setTimeout(() => {
+                el.className = 'status';
+            }, 5000);
         }
-        
-        // === ОТПРАВКА ДАННЫХ НА WEBHOOK ===
-        async function sendToWebhook(data) {
-            addLog(`Отправка данных на webhook: ${WEBHOOK_URL}`, 'info');
-            
-            // Формируем данные для отправки
+
+        // === Формирование payload ===
+        function getPayload(requestType) {
             const payload = {
-                type: currentMode,
+                type: requestType,
                 text: '',
                 file_id: null,
                 settings: {}
             };
-            
-            // Заполняем в зависимости от режима
-            switch (currentMode) {
+
+            switch (requestType) {
                 case 'video-agent':
                     payload.text = document.getElementById('text-input').value.trim();
                     payload.settings.avatar = document.getElementById('avatar-select').value;
                     payload.settings.orientation = 'portrait';
                     break;
-                    
+
                 case 'image-to-video':
-                    payload.text = document.getElementById('image-text').value.trim();
+                    payload.text = document.getElementById('photo-text').value.trim();
                     payload.file_id = 'demo_photo_file_id';
                     payload.settings.voice = 'default';
                     break;
-                    
+
                 case 'translate':
                     payload.file_id = 'demo_video_file_id';
                     payload.settings.language = document.getElementById('language-select').value;
                     break;
             }
+
+            return payload;
+        }
+
+        // === Отправка через deep‑link в Telegram ===
+        function sendRequest(requestType) {
+            const payload = getPayload(requestType);
+            const payloadStr = JSON.stringify(payload);
+            const encoded = btoa(encodeURIComponent(payloadStr));
             
-            addLog(`Данные: ${JSON.stringify(payload, null, 2)}`, 'info');
+            // Deep‑link в бота
+            const deepLink = `https://t.me/${BOT_USERNAME}?start=webapp_${encoded}`;
             
-            // В реальном WebApp Telegram сам отправляет данные
-            // Здесь эмулируем отправку через fetch
-            try {
-                addLog('Отправка POST запроса...', 'warning');
-                
-                // Эмулируем структуру Telegram update
-                const telegramUpdate = {
-                    update_id: Math.floor(Math.random() * 1000000),
-                    message: {
-                        message_id: Math.floor(Math.random() * 1000),
-                        from: Telegram.WebApp.initDataUnsafe.user,
-                        chat: { id: Telegram.WebApp.initDataUnsafe.user.id, type: 'private' },
-                        date: Math.floor(Date.now() / 1000),
-                        web_app_data: {
-                            data: JSON.stringify(payload)
-                        }
+            logToElement(`log-${requestType.replace('-', '-')}`, `Сформирован payload: ${payloadStr}`);
+            logToElement(`log-${requestType.replace('-', '-')}`, `Deep‑link: ${deepLink}`);
+
+            // Показываем инструкцию
+            showStatus(`status-${requestType.replace('-', '-')}`, 
+                `📤 Откройте ссылку в Telegram для отправки данных.`, 'success');
+
+            // Открываем ссылку в новой вкладке (или копируем)
+            window.open(deepLink, '_blank');
+        }
+
+        // === Инициализация ===
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('VideoGenie WebApp loaded (HeyGen style)');
+            
+            // Плавный скролл для якорных ссылок
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
                     }
-                };
-                
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(telegramUpdate)
-                });
-                
-                const responseText = await response.text();
-                
-                if (response.ok) {
-                    addLog(`✅ Webhook ответил: ${response.status}`, 'success');
-                    showStatus('Данные отправлены! Проверь Executions в n8n.', 'success');
-                } else {
-                    addLog(`❌ Ошибка webhook: ${response.status} - ${responseText}`, 'error');
-                    showStatus(`Ошибка: ${response.status}`, 'error');
-                }
-                
-            } catch (error) {
-                addLog(`❌ Ошибка отправки: ${error.message}`, 'error');
-                showStatus(`Ошибка сети: ${error.message}`, 'error');
-            }
-        }
-        
-        // === ПОКАЗАТЬ СТАТУС ===
-        function showStatus(message, type) {
-            statusDiv.textContent = message;
-            statusDiv.className = `status ${type}`;
-            
-            // Автоочистка через 5 секунд
-            setTimeout(() => {
-                statusDiv.className = 'status';
-            }, 5000);
-        }
-        
-        // === ТЕСТ WEBHOOK ===
-        async function testWebhook() {
-            addLog('🧪 Тестирование webhook...', 'warning');
-            
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'HEAD',
-                    timeout: 5000
-                }).catch(e => ({ ok: false, status: 'timeout' }));
-                
-                if (response.ok) {
-                    addLog(`✅ Webhook доступен: ${response.status}`, 'success');
-                } else {
-                    addLog(`⚠️ Webhook недоступен: ${response.status}`, 'warning');
-                }
-            } catch (error) {
-                addLog(`❌ Ошибка теста: ${error.message}`, 'error');
-            }
-        }
-        
-        // === ИНИЦИАЛИЗАЦИЯ ===
-        function init() {
-            addLog('🚀 WebApp инициализирован', 'success');
-            addLog(`Режим: ${currentMode}`, 'info');
-            addLog(`Webhook URL: ${WEBHOOK_URL}`, 'info');
-            
-            // Эмулируем инициализацию Telegram
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            
-            // Переключение режимов
-            modeButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    modeButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    formSections.forEach(section => section.classList.remove('active'));
-                    
-                    currentMode = btn.dataset.mode;
-                    document.getElementById(`${currentMode}-form`).classList.add('active');
-                    
-                    addLog(`Переключен режим: ${currentMode}`, 'info');
                 });
             });
-            
-            // Отправка данных
-            sendBtn.addEventListener('click', () => {
-                addLog('🔄 Отправка данных...', 'warning');
-                // Используем эмулированный Telegram SDK
-                Telegram.WebApp.sendData({ test: 'data' });
-            });
-            
-            // Очистка логов
-            clearLogBtn.addEventListener('click', clearLog);
-            
-            // Тест webhook
-            testWebhookBtn.addEventListener('click', testWebhook);
-            
-            // Автотест webhook при загрузке
-            setTimeout(testWebhook, 1000);
-        }
-        
-        // Запуск при загрузке
-        document.addEventListener('DOMContentLoaded', init);
-        
-        // Экспортируем для отладки в консоли
-        window.debug = {
-            addLog,
-            clearLog,
-            sendToWebhook,
-            testWebhook,
-            Telegram
-        };
-        
-        addLog('💡 Для отладки в консоли браузера используй window.debug', 'info');
+        });
     </script>
 </body>
 </html>
