@@ -372,7 +372,6 @@
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand()}
 
-const nav=document.getElementById('nav');
 const btns=document.querySelectorAll('.nav-btn');
 const sections=document.querySelectorAll('.section');
 const scrollTopBtn=document.getElementById('scrollTop');
@@ -387,39 +386,28 @@ btns.forEach(b=>{
   b.addEventListener('click',()=>{
     const t=document.getElementById(b.dataset.target);
     if(!t)return;
-    setActive(b);
+
+    if(active)active.classList.remove('active');
+    b.classList.add('active');
+    active=b;
+
     const y=t.getBoundingClientRect().top+window.pageYOffset-12;
     window.scrollTo({top:y,behavior:'smooth'});
+
+    setTimeout(()=>{
+      b.classList.remove('active');
+      active=null;
+    },800);
   });
 });
-
-function setActive(b){
-  if(active)active.classList.remove('active');
-  b.classList.add('active');active=b;
-}
 
 scrollTopBtn.addEventListener('click',()=>{
   window.scrollTo({top:0,behavior:'smooth'});
 });
 
 window.addEventListener('scroll',()=>{
-  trackSection();
   scrollTopBtn.classList.toggle('show',window.pageYOffset>=getArrowThreshold());
 },{passive:true});
-
-function trackSection(){
-  const cutoff=60;
-  let cur=null;
-  sections.forEach(s=>{
-    const r=s.getBoundingClientRect();
-    if(r.top<=cutoff&&r.bottom>cutoff)cur=s.id;
-  });
-  if(cur){
-    btns.forEach(b=>{
-      if(b.dataset.target===cur&&active!==b)setActive(b);
-    });
-  }
-}
 
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
