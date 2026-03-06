@@ -70,14 +70,6 @@
   .nav{
     padding:16px 16px 20px;
     display:flex;flex-direction:column;gap:10px;
-    position:sticky;top:0;z-index:100;
-    background:linear-gradient(180deg,var(--bg) 80%,transparent);
-    transition:all 0.3s;
-  }
-  .nav.pinned{
-    padding-top:8px;padding-bottom:12px;
-    background:var(--bg);
-    box-shadow:0 6px 30px rgba(0,0,0,0.6);
   }
 
   .nav-btn{
@@ -92,6 +84,7 @@
     transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
     position:relative;overflow:hidden;
     -webkit-user-select:none;user-select:none;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04);
   }
   .nav-btn::before{
     content:'';position:absolute;inset:0;
@@ -99,10 +92,26 @@
     opacity:0;transition:opacity 0.3s;
     border-radius:var(--radius);
   }
+
+  .nav-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+    border-color:#363640;
+  }
+
+  .nav-btn:active{
+    transform:translateY(1px) scale(0.985);
+    box-shadow:0 1px 4px rgba(0,0,0,0.3);
+    transition-duration:0.1s;
+  }
+
   .nav-btn.active{
     border-color:var(--accent);
-    box-shadow:0 4px 20px var(--accent-glow);
-    transform:scale(1.015);
+    box-shadow:0 4px 20px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+    transform:translateY(-2px);
+  }
+  .nav-btn.active:active{
+    transform:translateY(0px) scale(0.985);
   }
   .nav-btn.active::before{opacity:1}
   .nav-btn.active .nav-btn-text,
@@ -110,8 +119,6 @@
 
   .nav-btn-text,.nav-btn-icon{position:relative;z-index:1;transition:color 0.3s}
   .nav-btn-icon{width:20px;height:20px;flex-shrink:0}
-
-  .nav-btn:active{transform:scale(0.97)}
 
   /* ===== SECTIONS ===== */
   .section{
@@ -187,11 +194,6 @@
   .scroll-top{
     position:fixed;
     bottom:24px;
-    /* Ставим по центру правого padding'а: 
-       padding секций = 20px, кнопка 28px,
-       right = (20 - 28)/2 = -4, но от края экрана = 20 - 4 - 28 ... 
-       Проще: right:2px от экрана, кнопка 28px → центр на 16px от края,
-       что примерно середина 20px padding'а */
     right:10px;
     width:28px;height:28px;
     border-radius:50%;
@@ -386,7 +388,7 @@ btns.forEach(b=>{
     const t=document.getElementById(b.dataset.target);
     if(!t)return;
     setActive(b);
-    const y=t.getBoundingClientRect().top+window.pageYOffset-nav.offsetHeight-16;
+    const y=t.getBoundingClientRect().top+window.pageYOffset-12;
     window.scrollTo({top:y,behavior:'smooth'});
   });
 });
@@ -401,13 +403,12 @@ scrollTopBtn.addEventListener('click',()=>{
 });
 
 window.addEventListener('scroll',()=>{
-  nav.classList.toggle('pinned',window.pageYOffset>80);
   trackSection();
   scrollTopBtn.classList.toggle('show',window.pageYOffset>=getArrowThreshold());
 },{passive:true});
 
 function trackSection(){
-  const cutoff=nav.offsetHeight+60;
+  const cutoff=60;
   let cur=null;
   sections.forEach(s=>{
     const r=s.getBoundingClientRect();
