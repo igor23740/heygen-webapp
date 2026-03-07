@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>VideoGenie — Текст → Видео</title>
+<title>VideoGenie — Фото → Видео</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#0b0b0e;--surface:#161619;--card:#1e1e24;--card-border:#2a2a32;--accent:#2ec4b6;--accent-dark:#239e93;--accent-glow:rgba(46,196,182,0.18);--text:#f2f2f4;--text-dim:#9a9aa6;--radius:18px;--radius-sm:14px}
@@ -11,28 +11,23 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 .app{max-width:430px;margin:0 auto;min-height:100vh;padding:20px 16px 100px}
 
-/* ===== HEADER ===== */
 .page-header{text-align:center;margin-bottom:28px}
 .page-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(46,196,182,.1);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:12px}
 .page-header h1{font-size:22px;font-weight:800;line-height:1.25;margin-bottom:8px}
 .page-header p{font-size:13px;line-height:1.5;color:var(--text-dim)}
 
-/* ===== SCREENS ===== */
 .screen{display:none;animation:fadeIn .35s ease-out}
 .screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* ===== FORM ===== */
 .form-group{margin-bottom:20px}
 .form-label{display:block;font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
 
 .form-textarea{
-  width:100%;min-height:140px;padding:14px 16px;
+  width:100%;min-height:100px;padding:14px 16px;
   background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);
   color:var(--text);font-size:15px;line-height:1.5;
-  resize:vertical;outline:none;
-  transition:border-color .2s;
-  font-family:inherit;
+  resize:vertical;outline:none;transition:border-color .2s;font-family:inherit;
 }
 .form-textarea:focus{border-color:var(--accent)}
 .form-textarea::placeholder{color:var(--text-dim)}
@@ -40,8 +35,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .form-select{
   width:100%;padding:14px 16px;
   background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);
-  color:var(--text);font-size:15px;
-  outline:none;appearance:none;
+  color:var(--text);font-size:15px;outline:none;appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9aa6' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 16px center;
   cursor:pointer;transition:border-color .2s;
@@ -50,13 +44,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 
 .select-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* ===== AVATAR / VOICE CARDS ===== */
+/* ===== UPLOAD ZONE ===== */
+.upload-zone{
+  width:100%;min-height:180px;
+  border:2px dashed var(--card-border);border-radius:var(--radius-sm);
+  background:var(--card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.upload-zone:active{transform:scale(.98)}
+.upload-zone.dragover{border-color:var(--accent);background:rgba(46,196,182,.05)}
+.upload-zone.has-file{border-style:solid;border-color:var(--accent)}
+.upload-zone-icon{font-size:40px;margin-bottom:10px}
+.upload-zone-text{font-size:14px;color:var(--text-dim);text-align:center;line-height:1.4}
+.upload-zone-text strong{color:var(--accent)}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-preview{max-width:100%;max-height:200px;border-radius:var(--radius-sm);display:none}
+.upload-zone.has-file .upload-zone-icon,
+.upload-zone.has-file .upload-zone-text{display:none}
+.upload-zone.has-file .upload-preview{display:block}
+.upload-remove{
+  position:absolute;top:8px;right:8px;
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,0,0,.7);border:1px solid var(--card-border);
+  color:var(--text);font-size:16px;
+  display:none;align-items:center;justify-content:center;
+  cursor:pointer;z-index:2;
+}
+.upload-zone.has-file .upload-remove{display:flex}
+
+/* ===== CARDS ===== */
 .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .card-option{
   padding:12px;
   background:var(--card);border:2px solid var(--card-border);border-radius:var(--radius-sm);
-  text-align:center;cursor:pointer;
-  transition:all .2s;
+  text-align:center;cursor:pointer;transition:all .2s;
 }
 .card-option:active{transform:scale(.97)}
 .card-option.selected{border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
@@ -64,7 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .card-option-name{font-size:13px;font-weight:600}
 .card-option-desc{font-size:11px;color:var(--text-dim);margin-top:2px}
 
-/* ===== PROGRESS SCREEN ===== */
+/* ===== PROGRESS ===== */
 .progress-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
 .spinner{width:56px;height:56px;border:3px solid var(--card-border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -73,7 +96,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 .progress-bar-wrap{width:100%;max-width:280px;height:4px;background:var(--card);border-radius:2px;margin-top:20px;overflow:hidden}
 .progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:2px;transition:width .5s ease}
 
-/* ===== RESULT SCREEN ===== */
+/* ===== RESULT ===== */
 .result-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
 .result-icon{font-size:64px;margin-bottom:16px}
 .result-title{font-size:22px;font-weight:800;margin-bottom:8px}
@@ -92,12 +115,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   width:100%;padding:16px;
   border:1px solid var(--card-border);border-radius:var(--radius-sm);
   background:var(--card);color:var(--text);
-  font-size:15px;font-weight:600;cursor:pointer;
-  transition:transform .2s;
+  font-size:15px;font-weight:600;cursor:pointer;transition:transform .2s;
 }
 .btn-secondary:active{transform:scale(.97)}
 
-/* ===== ERROR ===== */
 .error-msg{padding:12px 16px;background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);border-radius:var(--radius-sm);color:#ff6b6b;font-size:13px;margin-bottom:16px;display:none}
 .error-msg.show{display:block;animation:fadeIn .3s ease-out}
 
@@ -107,11 +128,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 <body>
 <div class="app" id="app">
 
-  <!-- HEADER -->
   <div class="page-header">
-    <div class="page-badge">🎤 Текст → Видео</div>
-    <h1>Превратите текст в видео с помощью ИИ</h1>
-    <p>Вставьте сценарий, выберите аватар и голос — и получите готовый ролик за несколько минут.</p>
+    <div class="page-badge">📸 Фото → Видео</div>
+    <h1>Оживите фотографии за секунды</h1>
+    <p>Загрузите портретное фото, добавьте текст — и оно заговорит. Идеально для аватаров, приветствий и персонализированных обращений.</p>
   </div>
 
   <!-- ===== SCREEN: FORM ===== -->
@@ -120,8 +140,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <div class="error-msg" id="error"></div>
 
     <div class="form-group">
-      <label class="form-label">Сценарий</label>
-      <textarea class="form-textarea" id="scriptText" placeholder="Введите или вставьте текст сценария…"></textarea>
+      <label class="form-label">Фотография</label>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-zone-icon">📷</div>
+        <div class="upload-zone-text">Нажмите для загрузки<br>или <strong>перетащите фото</strong></div>
+        <input type="file" id="photoInput" accept="image/*">
+        <img class="upload-preview" id="uploadPreview" alt="Превью">
+        <button class="upload-remove" id="uploadRemove">✕</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Текст для озвучки</label>
+      <textarea class="form-textarea" id="scriptText" placeholder="Что должен сказать персонаж на фото…"></textarea>
     </div>
 
     <div class="form-group">
@@ -159,32 +190,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     </div>
 
     <div class="form-group">
-      <label class="form-label">Аватар</label>
-      <div class="card-grid" id="avatarGrid">
-        <div class="card-option selected" data-id="avatar_anna">
-          <div class="card-option-icon">👩‍💼</div>
-          <div class="card-option-name">Анна</div>
-          <div class="card-option-desc">Деловой стиль</div>
-        </div>
-        <div class="card-option" data-id="avatar_dmitry">
-          <div class="card-option-icon">👨‍💻</div>
-          <div class="card-option-name">Дмитрий</div>
-          <div class="card-option-desc">Технический</div>
-        </div>
-        <div class="card-option" data-id="avatar_maria">
-          <div class="card-option-icon">👩‍🎤</div>
-          <div class="card-option-name">Мария</div>
-          <div class="card-option-desc">Креативный</div>
-        </div>
-        <div class="card-option" data-id="avatar_alex">
-          <div class="card-option-icon">🧑‍🏫</div>
-          <div class="card-option-name">Алексей</div>
-          <div class="card-option-desc">Обучающий</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group">
       <label class="form-label">Голос</label>
       <div class="card-grid" id="voiceGrid">
         <div class="card-option selected" data-id="voice_warm_f">
@@ -216,7 +221,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   <div class="screen" id="screen-progress">
     <div class="progress-center">
       <div class="spinner"></div>
-      <div class="progress-text">Создаём ваше видео…</div>
+      <div class="progress-text">Оживляем ваше фото…</div>
       <div class="progress-sub">Обычно это занимает 2–5 минут.<br>Можете свернуть — бот пришлёт результат в чат.</div>
       <div class="progress-bar-wrap">
         <div class="progress-bar" id="progressBar"></div>
@@ -229,7 +234,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <div class="result-center">
       <div class="result-icon">✅</div>
       <div class="result-title">Видео готово!</div>
-      <div class="result-desc">Ваш ролик успешно сгенерирован. Он также отправлен вам в чат с ботом.</div>
+      <div class="result-desc">Ваше фото ожило. Видео также отправлено вам в чат с ботом.</div>
       <div class="result-video" id="resultVideo">Превью видео</div>
       <button class="btn-primary" id="btnOpenVideo">Открыть видео</button>
       <button class="btn-secondary" id="btnNewVideo">Создать ещё видео</button>
@@ -239,7 +244,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 </div>
 
 <script>
-/* ===== Telegram WebApp ===== */
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
   tg.ready();
@@ -248,20 +252,68 @@ if (tg) {
   tg.BackButton.onClick(() => { window.location.href = 'index.html'; });
 }
 
-/* ===== State ===== */
 let state = {
-  avatarId: 'avatar_anna',
   voiceId: 'voice_warm_f',
+  photoFile: null,
   jobId: null
 };
 
-/* ===== Screen switching ===== */
+/* ===== Screens ===== */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* ===== Card selection ===== */
+/* ===== Upload ===== */
+const uploadZone = document.getElementById('uploadZone');
+const photoInput = document.getElementById('photoInput');
+const uploadPreview = document.getElementById('uploadPreview');
+const uploadRemove = document.getElementById('uploadRemove');
+
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file);
+});
+
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+  uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleFile(file);
+});
+
+uploadRemove.addEventListener('click', (e) => {
+  e.stopPropagation();
+  resetUpload();
+});
+
+function handleFile(file) {
+  state.photoFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadPreview.src = e.target.result;
+    uploadZone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetUpload() {
+  state.photoFile = null;
+  photoInput.value = '';
+  uploadPreview.src = '';
+  uploadZone.classList.remove('has-file');
+}
+
+/* ===== Voice cards ===== */
 function initCardGrid(gridId, stateKey) {
   const grid = document.getElementById(gridId);
   grid.addEventListener('click', (e) => {
@@ -272,12 +324,12 @@ function initCardGrid(gridId, stateKey) {
     state[stateKey] = card.dataset.id;
   });
 }
-initCardGrid('avatarGrid', 'avatarId');
 initCardGrid('voiceGrid', 'voiceId');
 
 /* ===== MainButton ===== */
 if (tg) {
   tg.MainButton.setText('Создать видео');
+  tg.MainButton.setParams({ color: '#2dbeb0', text_color: '#000000' });
   tg.MainButton.show();
   tg.onEvent('mainButtonClicked', handleSubmit);
 }
@@ -297,43 +349,37 @@ async function handleSubmit() {
   const style = document.getElementById('style').value;
   const language = document.getElementById('language').value;
 
-  /* Валидация */
-  if (!script) { showError('Введите текст сценария'); return; }
-  if (script.length < 10) { showError('Сценарий слишком короткий — минимум 10 символов'); return; }
+  if (!state.photoFile) { showError('Загрузите фотографию'); return; }
+  if (!script) { showError('Введите текст для озвучки'); return; }
+  if (script.length < 10) { showError('Текст слишком короткий — минимум 10 символов'); return; }
 
-  const payload = {
-    type: 'text_to_video',
-    script,
-    duration: parseInt(duration),
-    style,
-    language,
-    avatarId: state.avatarId,
-    voiceId: state.voiceId
-  };
-
-  /* Переключаем на экран прогресса */
   showScreen('screen-progress');
   if (tg) tg.MainButton.hide();
 
-  /* === ЗАГЛУШКА: имитация запроса к бэкенду === */
-  /* Когда бэкенд будет готов, заменить на реальный fetch:
-  
+  /* === ЗАГЛУШКА === */
+  /* Когда бэкенд готов:
+  const formData = new FormData();
+  formData.append('type', 'photo_to_video');
+  formData.append('photo', state.photoFile);
+  formData.append('script', script);
+  formData.append('duration', duration);
+  formData.append('style', style);
+  formData.append('language', language);
+  formData.append('voiceId', state.voiceId);
+
   const res = await fetch('https://api.videogenie.ru/api/generate-video', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: formData
   });
   const { jobId } = await res.json();
   state.jobId = jobId;
   pollStatus(jobId);
-  
   */
 
-  /* Имитация прогресса */
   simulateProgress();
 }
 
-/* ===== Заглушка прогресса ===== */
+/* ===== Simulate ===== */
 function simulateProgress() {
   const bar = document.getElementById('progressBar');
   let progress = 0;
@@ -342,48 +388,14 @@ function simulateProgress() {
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
-      setTimeout(() => {
-        showScreen('screen-result');
-      }, 600);
+      setTimeout(() => { showScreen('screen-result'); }, 600);
     }
     bar.style.width = progress + '%';
   }, 500);
 }
 
-/* ===== Реальный поллинг (для будущего бэкенда) ===== */
-/*
-async function pollStatus(jobId) {
-  const bar = document.getElementById('progressBar');
-  const poll = setInterval(async () => {
-    const res = await fetch(`https://api.videogenie.ru/api/video-status?jobId=${jobId}`);
-    const data = await res.json();
-    
-    if (data.progress) bar.style.width = data.progress + '%';
-    
-    if (data.status === 'ready') {
-      clearInterval(poll);
-      bar.style.width = '100%';
-      setTimeout(() => {
-        showResult(data.videoUrl, data.thumbnailUrl);
-      }, 400);
-    } else if (data.status === 'error') {
-      clearInterval(poll);
-      showScreen('screen-form');
-      if (tg) tg.MainButton.show();
-      showError('Ошибка генерации. Попробуйте ещё раз.');
-    }
-  }, 5000);
-}
-
-function showResult(videoUrl, thumbnailUrl) {
-  // подставить реальное превью и ссылку
-  showScreen('screen-result');
-}
-*/
-
 /* ===== Result buttons ===== */
 document.getElementById('btnOpenVideo').addEventListener('click', () => {
-  /* Когда бэкенд готов: window.open(videoUrl, '_blank'); */
   if (tg) tg.showAlert('Здесь будет ссылка на готовое видео');
   else alert('Здесь будет ссылка на готовое видео');
 });
@@ -391,6 +403,7 @@ document.getElementById('btnOpenVideo').addEventListener('click', () => {
 document.getElementById('btnNewVideo').addEventListener('click', () => {
   document.getElementById('scriptText').value = '';
   document.getElementById('progressBar').style.width = '0%';
+  resetUpload();
   showScreen('screen-form');
   if (tg) { tg.MainButton.show(); }
 });
