@@ -329,6 +329,7 @@ initCardGrid('voiceGrid', 'voiceId');
 /* ===== MainButton ===== */
 if (tg) {
   tg.MainButton.setText('Создать видео');
+  tg.MainButton.setParams({ color: '#2dbeb0', text_color: '#000000' });
   tg.MainButton.show();
   tg.onEvent('mainButtonClicked', handleSubmit);
 }
