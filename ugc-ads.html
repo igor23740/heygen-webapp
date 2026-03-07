@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>VideoGenie — UGC-ролики</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0b0b0e;--surface:#161619;--card:#1e1e24;--card-border:#2a2a32;--accent:#2ec4b6;--accent-dark:#239e93;--accent-glow:rgba(46,196,182,0.18);--text:#f2f2f4;--text-dim:#9a9aa6;--radius:18px;--radius-sm:14px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding:20px 16px 100px}
+
+.page-header{text-align:center;margin-bottom:28px}
+.page-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(46,196,182,.1);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:12px}
+.page-header h1{font-size:22px;font-weight:800;line-height:1.25;margin-bottom:8px}
+.page-header p{font-size:13px;line-height:1.5;color:var(--text-dim)}
+
+.screen{display:none;animation:fadeIn .35s ease-out}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+
+.form-textarea{
+  width:100%;min-height:100px;padding:14px 16px;
+  background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);
+  color:var(--text);font-size:15px;line-height:1.5;
+  resize:vertical;outline:none;transition:border-color .2s;font-family:inherit;
+}
+.form-textarea:focus{border-color:var(--accent)}
+.form-textarea::placeholder{color:var(--text-dim)}
+
+.form-select{
+  width:100%;padding:14px 16px;
+  background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);
+  color:var(--text);font-size:15px;outline:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9aa6' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;
+  cursor:pointer;transition:border-color .2s;
+}
+.form-select:focus{border-color:var(--accent)}
+
+.select-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.upload-zone{
+  width:100%;min-height:180px;
+  border:2px dashed var(--card-border);border-radius:var(--radius-sm);
+  background:var(--card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+}
+.upload-zone:active{transform:scale(.98)}
+.upload-zone.dragover{border-color:var(--accent);background:rgba(46,196,182,.05)}
+.upload-zone.has-file{border-style:solid;border-color:var(--accent)}
+.upload-zone-icon{font-size:40px;margin-bottom:10px}
+.upload-zone-text{font-size:14px;color:var(--text-dim);text-align:center;line-height:1.4}
+.upload-zone-text strong{color:var(--accent)}
+.upload-zone-text small{display:block;margin-top:4px;font-size:11px;color:var(--text-dim)}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-preview{max-width:100%;max-height:200px;border-radius:var(--radius-sm);display:none}
+.upload-zone.has-file .upload-zone-icon,
+.upload-zone.has-file .upload-zone-text{display:none}
+.upload-zone.has-file .upload-preview{display:block}
+.upload-filename{display:none;font-size:13px;color:var(--accent);text-align:center;padding:8px}
+.upload-zone.has-file .upload-filename{display:block}
+.upload-remove{
+  position:absolute;top:8px;right:8px;
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,0,0,.7);border:1px solid var(--card-border);
+  color:var(--text);font-size:16px;
+  display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;
+}
+.upload-zone.has-file .upload-remove{display:flex}
+
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card-option{
+  padding:12px;background:var(--card);border:2px solid var(--card-border);border-radius:var(--radius-sm);
+  text-align:center;cursor:pointer;transition:all .2s;
+}
+.card-option:active{transform:scale(.97)}
+.card-option.selected{border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
+.card-option-icon{font-size:32px;margin-bottom:6px}
+.card-option-name{font-size:13px;font-weight:600}
+.card-option-desc{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+.progress-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
+.spinner{width:56px;height:56px;border:3px solid var(--card-border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress-text{font-size:16px;font-weight:600;margin-bottom:8px}
+.progress-sub{font-size:13px;color:var(--text-dim);line-height:1.5}
+.progress-bar-wrap{width:100%;max-width:280px;height:4px;background:var(--card);border-radius:2px;margin-top:20px;overflow:hidden}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:2px;transition:width .5s ease}
+
+.result-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
+.result-icon{font-size:64px;margin-bottom:16px}
+.result-title{font-size:22px;font-weight:800;margin-bottom:8px}
+.result-desc{font-size:14px;color:var(--text-dim);margin-bottom:28px;line-height:1.5}
+.result-video{width:100%;aspect-ratio:9/16;max-width:260px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-sm);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px}
+.btn-primary{
+  width:100%;padding:16px;border:none;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,#2dbeb0,#26a89b);
+  color:#000;font-size:15px;font-weight:700;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 20px rgba(45,190,176,0.25);margin-bottom:10px;
+}
+.btn-primary:active{transform:scale(.97)}
+.btn-secondary{
+  width:100%;padding:16px;border:1px solid var(--card-border);border-radius:var(--radius-sm);
+  background:var(--card);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;transition:transform .2s;
+}
+.btn-secondary:active{transform:scale(.97)}
+
+.error-msg{padding:12px 16px;background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);border-radius:var(--radius-sm);color:#ff6b6b;font-size:13px;margin-bottom:16px;display:none}
+.error-msg.show{display:block;animation:fadeIn .3s ease-out}
+
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="page-header">
+    <div class="page-badge">🔥 UGC-ролики</div>
+    <h1>Вирусные реакции и живой UGC — мгновенно</h1>
+    <p>Создавайте ролики с «живыми» реакциями и отзывами, которые выглядят как настоящий пользовательский контент.</p>
+  </div>
+
+  <!-- ===== FORM ===== -->
+  <div class="screen active" id="screen-form">
+
+    <div class="error-msg" id="error"></div>
+
+    <div class="form-group">
+      <label class="form-label">Фото или видео продукта (необязательно)</label>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-zone-icon">🎬</div>
+        <div class="upload-zone-text">Нажмите для загрузки<br>или <strong>перетащите файл</strong><small>Изображение или видео до 25 МБ</small></div>
+        <input type="file" id="mediaInput" accept="image/*,video/*">
+        <img class="upload-preview" id="uploadPreview" alt="Превью">
+        <div class="upload-filename" id="uploadFilename"></div>
+        <button class="upload-remove" id="uploadRemove">✕</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Тип UGC</label>
+      <div class="select-row">
+        <div>
+          <select class="form-select" id="ugcType">
+            <option value="reaction">Реакция на продукт</option>
+            <option value="review">Отзыв / обзор</option>
+            <option value="unboxing">Распаковка</option>
+            <option value="testimonial">Рекомендация</option>
+          </select>
+        </div>
+        <div>
+          <select class="form-select" id="tone">
+            <option value="excited">Восторженный</option>
+            <option value="honest">Честный</option>
+            <option value="casual">Расслабленный</option>
+            <option value="professional">Профессиональный</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Текст / сценарий</label>
+      <textarea class="form-textarea" id="scriptText" placeholder="Что должен говорить персонаж? Можно оставить пустым — нейросеть сгенерирует текст сама…"></textarea>
+    </div>
+
+    <div class="form-group">
+      <div class="select-row">
+        <div>
+          <label class="form-label">Длительность</label>
+          <select class="form-select" id="duration">
+            <option value="15" selected>15 секунд</option>
+            <option value="30">30 секунд</option>
+            <option value="60">60 секунд</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Формат</label>
+          <select class="form-select" id="format">
+            <option value="vertical" selected>Вертикальный 9:16</option>
+            <option value="horizontal">Горизонтальный 16:9</option>
+            <option value="square">Квадратный 1:1</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Язык</label>
+      <select class="form-select" id="language">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Персонаж</label>
+      <div class="card-grid" id="avatarGrid">
+        <div class="card-option selected" data-id="avatar_lisa">
+          <div class="card-option-icon">👩</div>
+          <div class="card-option-name">Лиза</div>
+          <div class="card-option-desc">Молодая, энергичная</div>
+        </div>
+        <div class="card-option" data-id="avatar_ivan">
+          <div class="card-option-icon">👨</div>
+          <div class="card-option-name">Иван</div>
+          <div class="card-option-desc">Простой, искренний</div>
+        </div>
+        <div class="card-option" data-id="avatar_kate">
+          <div class="card-option-icon">👩‍🦰</div>
+          <div class="card-option-name">Катя</div>
+          <div class="card-option-desc">Блогер-стиль</div>
+        </div>
+        <div class="card-option" data-id="avatar_max">
+          <div class="card-option-icon">🧔</div>
+          <div class="card-option-name">Макс</div>
+          <div class="card-option-desc">Техно-обзорщик</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Голос</label>
+      <div class="card-grid" id="voiceGrid">
+        <div class="card-option selected" data-id="voice_energetic_f">
+          <div class="card-option-icon">🎙️</div>
+          <div class="card-option-name">Энергичный (Ж)</div>
+          <div class="card-option-desc">Яркий, динамичный</div>
+        </div>
+        <div class="card-option" data-id="voice_casual_m">
+          <div class="card-option-icon">🎙️</div>
+          <div class="card-option-name">Расслабленный (М)</div>
+          <div class="card-option-desc">Свой в доску</div>
+        </div>
+        <div class="card-option" data-id="voice_warm_f">
+          <div class="card-option-icon">🎙️</div>
+          <div class="card-option-name">Тёплый (Ж)</div>
+          <div class="card-option-desc">Мягкий, дружелюбный</div>
+        </div>
+        <div class="card-option" data-id="voice_confident_m">
+          <div class="card-option-icon">🎙️</div>
+          <div class="card-option-name">Уверенный (М)</div>
+          <div class="card-option-desc">Деловой, чёткий</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="screen" id="screen-progress">
+    <div class="progress-center">
+      <div class="spinner"></div>
+      <div class="progress-text">Создаём ваш UGC-ролик…</div>
+      <div class="progress-sub">Обычно это занимает 2–5 минут.<br>Можете свернуть — бот пришлёт результат в чат.</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULT ===== -->
+  <div class="screen" id="screen-result">
+    <div class="result-center">
+      <div class="result-icon">✅</div>
+      <div class="result-title">UGC-ролик готов!</div>
+      <div class="result-desc">Ваш ролик с живой реакцией создан. Он также отправлен вам в чат с ботом.</div>
+      <div class="result-video" id="resultVideo">Превью видео</div>
+      <button class="btn-primary" id="btnOpenVideo">Открыть видео</button>
+      <button class="btn-secondary" id="btnNewVideo">Создать ещё ролик</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.BackButton.show();
+  tg.BackButton.onClick(() => { window.location.href = 'index.html'; });
+}
+
+let state = {
+  avatarId: 'avatar_lisa',
+  voiceId: 'voice_energetic_f',
+  mediaFile: null,
+  jobId: null
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ===== Upload ===== */
+const uploadZone = document.getElementById('uploadZone');
+const mediaInput = document.getElementById('mediaInput');
+const uploadPreview = document.getElementById('uploadPreview');
+const uploadFilename = document.getElementById('uploadFilename');
+const uploadRemove = document.getElementById('uploadRemove');
+
+mediaInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file);
+});
+
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+});
+uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+uploadRemove.addEventListener('click', (e) => {
+  e.stopPropagation();
+  resetUpload();
+});
+
+function handleFile(file) {
+  state.mediaFile = file;
+  uploadZone.classList.add('has-file');
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadPreview.src = e.target.result;
+      uploadPreview.style.display = 'block';
+      uploadFilename.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    uploadPreview.style.display = 'none';
+    uploadFilename.textContent = '🎥 ' + file.name;
+    uploadFilename.style.display = 'block';
+  }
+}
+
+function resetUpload() {
+  state.mediaFile = null;
+  mediaInput.value = '';
+  uploadPreview.src = '';
+  uploadPreview.style.display = 'none';
+  uploadFilename.textContent = '';
+  uploadFilename.style.display = 'none';
+  uploadZone.classList.remove('has-file');
+}
+
+/* ===== Cards ===== */
+function initCardGrid(gridId, stateKey) {
+  const grid = document.getElementById(gridId);
+  grid.addEventListener('click', (e) => {
+    const card = e.target.closest('.card-option');
+    if (!card) return;
+    grid.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state[stateKey] = card.dataset.id;
+  });
+}
+initCardGrid('avatarGrid', 'avatarId');
+initCardGrid('voiceGrid', 'voiceId');
+
+/* ===== MainButton ===== */
+if (tg) {
+  tg.MainButton.setText('Создать видео');
+  tg.MainButton.setParams({ color: '#2dbeb0', text_color: '#000000' });
+  tg.MainButton.show();
+  tg.onEvent('mainButtonClicked', handleSubmit);
+}
+
+/* ===== Error ===== */
+function showError(msg) {
+  const el = document.getElementById('error');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+/* ===== Submit ===== */
+async function handleSubmit() {
+  const ugcType = document.getElementById('ugcType').value;
+  const tone = document.getElementById('tone').value;
+  const script = document.getElementById('scriptText').value.trim();
+  const duration = document.getElementById('duration').value;
+  const format = document.getElementById('format').value;
+  const language = document.getElementById('language').value;
+
+  /* Фото/видео необязательно, текст тоже (нейросеть сгенерирует) */
+
+  showScreen('screen-progress');
+  if (tg) tg.MainButton.hide();
+
+  /* === ЗАГЛУШКА === */
+  simulateProgress();
+}
+
+function simulateProgress() {
+  const bar = document.getElementById('progressBar');
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 12 + 3;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      setTimeout(() => { showScreen('screen-result'); }, 600);
+    }
+    bar.style.width = progress + '%';
+  }, 500);
+}
+
+/* ===== Result ===== */
+document.getElementById('btnOpenVideo').addEventListener('click', () => {
+  if (tg) tg.showAlert('Здесь будет ссылка на готовое видео');
+  else alert('Здесь будет ссылка на готовое видео');
+});
+
+document.getElementById('btnNewVideo').addEventListener('click', () => {
+  document.getElementById('scriptText').value = '';
+  document.getElementById('progressBar').style.width = '0%';
+  resetUpload();
+  showScreen('screen-form');
+  if (tg) { tg.MainButton.show(); }
+});
+</script>
+</body>
+</html>
