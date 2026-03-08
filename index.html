@@ -20,6 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 
 .nav{padding:16px 16px 20px;display:flex;flex-direction:column;gap:10px}
 
+/* ===== КНОПКИ НАВИГАЦИИ ===== */
 .nav-btn{
   display:flex;align-items:center;justify-content:center;gap:10px;
   width:100%;padding:16px 14px;
@@ -32,7 +33,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   touch-action:manipulation;
   box-shadow:0 2px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04);
   transform:translateY(0) scale(1);
-  transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),border-color .3s ease;
+  /* Плавный возврат в покой */
+  transition:transform .3s cubic-bezier(.4,0,.2,1),
+             box-shadow .3s cubic-bezier(.4,0,.2,1),
+             border-color .3s ease;
 }
 .nav-btn::before{
   content:'';position:absolute;inset:0;
@@ -42,27 +46,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 }
 .nav-btn .nav-btn-text{position:relative;z-index:1;transition:color .3s ease-out}
 
+/* --- Наведение курсора (десктоп) — приподнимается --- */
 .nav-btn.hovered{
   transform:translateY(-3px) scale(1);
   box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05);
   border-color:#3a3a44;
 }
+
+/* --- Нажата / палец на кнопке — вдавливается + подсветка --- */
 .nav-btn.pressed{
   transform:translateY(1px) scale(.97);
   box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.02);
-  transition:transform .08s ease,box-shadow .08s ease,border-color .08s ease;
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
 }
+
+/* --- Акцентная подсветка (мгновенно загорается) --- */
 .nav-btn.lit{
   border-color:var(--accent);
   box-shadow:0 4px 24px var(--accent-glow),0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
 }
-.nav-btn.lit::before{opacity:1;transition:opacity 0s}
-.nav-btn.lit .nav-btn-text{color:#fff;transition:color 0s}
+.nav-btn.lit::before{
+  opacity:1;
+  transition:opacity 0s;
+}
+.nav-btn.lit .nav-btn-text{
+  color:#fff;
+  transition:color 0s;
+}
+
+/* Комбинация: lit + pressed */
 .nav-btn.lit.pressed{
   transform:translateY(1px) scale(.97);
   box-shadow:0 1px 6px var(--accent-glow),0 1px 3px rgba(0,0,0,.3);
 }
 
+/* ===== SECTIONS ===== */
 .section{padding:48px 20px 40px;opacity:0;transform:translateY(30px);transition:all .55s cubic-bezier(.25,.46,.45,.94)}
 .section.visible{opacity:1;transform:translateY(0)}
 .section-label{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(46,196,182,.1);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:16px}
@@ -89,7 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 
   <section class="hero" id="top">
     <div class="hero-logo">🎬</div>
-    <h1>VideoGenie<br>теперь твоя<br><span class="accent-word">суперсила</span></h1>
+    <h1>VideoGenie <br>теперь твоя<br><span class="accent-word">суперсила</span></h1>
     <p>Создавай маркетинговые, обучающие и продающие видео из единого рабочего пространства — быстро, качественно и без камеры.</p>
   </section>
 
@@ -106,7 +124,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <h2>Превратите текст в видео с помощью ИИ</h2>
     <p class="desc">Просто вставьте сценарий — и получите готовый ролик с реалистичным AI-ведущим, озвучкой и субтитрами. Камера не нужна.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="window.location.href='text-to-video.html'">Сгенерировать →</button>
+    <button class="cta-btn" onclick="go('text_to_video')">Сгенерировать бесплатно →</button>
   </section>
 
   <section class="section" id="s-ptv">
@@ -114,7 +132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <h2>Оживите фотографии за секунды</h2>
     <p class="desc">Загрузите портретное фото — и оно заговорит. Идеально для аватаров, приветствий и персонализированных обращений.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="window.location.href='photo-to-video.html'">Сгенерировать →</button>
+    <button class="cta-btn" onclick="go('photo_to_video')">Сгенерировать бесплатно →</button>
   </section>
 
   <section class="section" id="s-pa">
@@ -122,7 +140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <h2>Размещение продукта без съёмочной площадки</h2>
     <p class="desc">Загрузите фото товара — нейросеть сама создаст рекламный ролик с фоном, сценарием и ведущим.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="window.location.href='product-ads.html'">Сгенерировать →</button>
+    <button class="cta-btn" onclick="go('product_ads')">Сгенерировать бесплатно →</button>
   </section>
 
   <section class="section" id="s-ugc">
@@ -130,7 +148,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <h2>Вирусные реакции и живой UGC — мгновенно</h2>
     <p class="desc">Создавайте ролики с «живыми» реакциями и отзывами, которые выглядят как настоящий пользовательский контент.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="window.location.href='ugc-ads.html'">Сгенерировать →</button>
+    <button class="cta-btn" onclick="go('ugc_ads')">Сгенерировать бесплатно →</button>
   </section>
 
   <section class="section" id="s-aim">
@@ -138,7 +156,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <h2>Творите с самыми мощными AI-моделями мира</h2>
     <p class="desc">Выбирайте из библиотеки передовых AI-моделей для генерации видео, озвучки, монтажа и локализации — всё в одном месте.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="window.location.href='ai-models.html'">Сгенерировать →</button>
+    <button class="cta-btn" onclick="go('ai_models')">Сгенерировать бесплатно →</button>
   </section>
 
 </div>
@@ -149,7 +167,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 
 <script>
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); tg.BackButton.hide(); }
+if (tg) { tg.ready(); tg.expand(); }
 
 const btns = document.querySelectorAll('.nav-btn');
 const sections = document.querySelectorAll('.section');
@@ -160,7 +178,9 @@ function getArrowThreshold() {
   return first ? first.offsetTop - 100 : 300;
 }
 
+/* ===== КНОПКИ ===== */
 btns.forEach(b => {
+
   let navigated = false;
 
   function navigate() {
@@ -173,6 +193,7 @@ btns.forEach(b => {
     }
   }
 
+  /* --- Touch (мобильные) --- */
   b.addEventListener('touchstart', () => {
     navigated = false;
     b.classList.add('lit', 'pressed');
@@ -189,8 +210,14 @@ btns.forEach(b => {
     b.classList.remove('lit', 'pressed');
   });
 
-  b.addEventListener('mouseenter', () => { b.classList.add('hovered'); });
-  b.addEventListener('mouseleave', () => { b.classList.remove('hovered', 'lit', 'pressed'); });
+  /* --- Mouse (десктоп) --- */
+  b.addEventListener('mouseenter', () => {
+    b.classList.add('hovered');
+  });
+
+  b.addEventListener('mouseleave', () => {
+    b.classList.remove('hovered', 'lit', 'pressed');
+  });
 
   b.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
@@ -208,6 +235,7 @@ btns.forEach(b => {
   b.addEventListener('click', (e) => { e.preventDefault(); });
 });
 
+/* ===== Scroll-to-top ===== */
 scrollTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -216,10 +244,25 @@ window.addEventListener('scroll', () => {
   scrollTopBtn.classList.toggle('show', window.pageYOffset >= getArrowThreshold());
 }, { passive: true });
 
+/* ===== Section reveal ===== */
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 sections.forEach(s => obs.observe(s));
+
+/* ===== CTA ===== */
+function go(type) {
+  const pages = {
+    'text_to_video': 'text-to-video.html',
+    'photo_to_video': 'photo-to-video.html',
+    'product_ads': 'product-ads.html',
+    'ugc_ads': 'ugc-ads.html',
+    'ai_models': 'ai-models.html'
+  };
+  if (pages[type]) {
+    window.location.href = pages[type];
+  }
+}
 </script>
 </body>
 </html>
