@@ -308,42 +308,30 @@ async function handleSubmit() {
     duration: parseInt(duration),
     style,
     language,
-    avatarId: state.avatarId,      // e.g., 'avatar_anna'
-    voiceId: state.voiceId,        // e.g., 'voice_warm_f'
-    userId: tg ? tg.initDataUnsafe.user.id : null,
-    chatId: tg ? tg.initDataUnsafe.user.id : null
+    avatarId: state.avatarId,
+    voiceId: state.voiceId
   };
 
   /* Переключаем на экран прогресса */
   showScreen('screen-progress');
   if (tg) tg.MainButton.hide();
 
-  // === REAL REQUEST (no stub) ===
-  // 1. Telegram WebApp flow (preferred)
-  if (tg && tg.sendData) {
-    tg.sendData(JSON.stringify(payload));
-    // Telegram will forward data to bot, webhook will receive update with web_app_data
-    simulateProgress(); // keep simulation for now
-    return;
-  }
+  /* === ЗАГЛУШКА: имитация запроса к бэкенду === */
+  /* Когда бэкенд будет готов, заменить на реальный fetch:
+  
+  const res = await fetch('https://api.videogenie.ru/api/generate-video', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const { jobId } = await res.json();
+  state.jobId = jobId;
+  pollStatus(jobId);
+  
+  */
 
-  // 2. Direct fetch fallback (for testing outside Telegram)
-  try {
-    const res = await fetch('https://5773171-do48756.twc1.net/webhook-test/heygen-bot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    console.log('Response:', data);
-    simulateProgress();
-  } catch (err) {
-    console.error('Fetch error:', err);
-    showScreen('screen-form');
-    if (tg) tg.MainButton.show();
-    showError('Ошибка отправки запроса. Проверьте подключение.');
-  }
+  /* Имитация прогресса */
+  simulateProgress();
 }
 
 /* ===== Заглушка прогресса ===== */
