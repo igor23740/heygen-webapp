@@ -372,17 +372,17 @@ const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
 const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
 
 const AVATAR_MAP = {
-  'avatar_anna': 'Annie Office Standing Front',
-  'avatar_dmitry': 'Annie Office Standing Front',
-  'avatar_maria': 'Annie Office Standing Front',
-  'avatar_alex': 'Annie Office Standing Front'
+  'avatar_anna': 'Ann Business Front',
+  'avatar_dmitry': 'Artur Office Front',
+  'avatar_maria': 'Adriana Business Front',
+  'avatar_alex': 'Brandon Business Sitting Front'
 };
 
 const VOICE_MAP = {
-  'voice_warm_f': 'Melissa',
-  'voice_confident_m': 'Melissa',
-  'voice_energetic_f': 'Melissa',
-  'voice_calm_m': 'Melissa'
+  'voice_warm_f': 'Warm Pro Narrator',
+  'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️',
+  'voice_energetic_f': 'Ivy',
+  'voice_calm_m': 'Mellow Marcus'
 };
 
 /* ===== File to base64 ===== */
@@ -419,9 +419,10 @@ async function handleSubmit() {
       chat_id: String(user.id),
       user_id: String(user.id),
       image_url: imageData,
-      avatar_name: AVATAR_MAP[state.avatarId] || 'Annie Office Standing Front',
-      voice_name: VOICE_MAP[state.voiceId] || 'Melissa',
-      resolution: '1080p'
+      avatar_name: AVATAR_MAP[state.avatarId] || 'Ann Business Front',
+      voice_name: VOICE_MAP[state.voiceId] || 'Warm Pro Narrator',
+      resolution: '1080p',
+      aspect_ratio: document.getElementById('format')?.value === 'vertical' ? '9:16' : document.getElementById('format')?.value === 'square' ? '1:1' : '16:9'
     };
 
     const res = await fetch(WEBHOOK_URL, {

@@ -397,17 +397,17 @@ const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
 const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
 
 const AVATAR_MAP = {
-  'avatar_anna': 'Annie Office Standing Front',
-  'avatar_dmitry': 'Annie Office Standing Front',
-  'avatar_maria': 'Annie Office Standing Front',
-  'avatar_alex': 'Annie Office Standing Front'
+  'avatar_lisa': 'Abigail (Upper Body)',
+  'avatar_ivan': 'Bryan Casual Front',
+  'avatar_kate': 'Chloe (Upper Body)',
+  'avatar_max': 'August Casual Front'
 };
 
 const VOICE_MAP = {
-  'voice_warm_f': 'Melissa',
-  'voice_confident_m': 'Melissa',
-  'voice_energetic_f': 'Melissa',
-  'voice_calm_m': 'Melissa'
+  'voice_energetic_f': 'Ivy',
+  'voice_casual_m': 'Chill Brian',
+  'voice_warm_f': 'Warm Pro Narrator',
+  'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️'
 };
 
 /* ===== Submit ===== */
@@ -425,10 +425,11 @@ async function handleSubmit() {
     text: script,
     chat_id: String(user.id),
     user_id: String(user.id),
-    avatar_name: AVATAR_MAP[state.avatarId] || 'Annie Office Standing Front',
-    voice_name: VOICE_MAP[state.voiceId] || 'Melissa',
+    avatar_name: AVATAR_MAP[state.avatarId] || 'Abigail (Upper Body)',
+    voice_name: VOICE_MAP[state.voiceId] || 'Ivy',
     avatar_style: 'closeUp',
-    resolution: '1080p'
+    resolution: '1080p',
+    aspect_ratio: document.getElementById('format')?.value === 'horizontal' ? '16:9' : document.getElementById('format')?.value === 'square' ? '1:1' : '9:16'
   };
 
   showScreen('screen-progress');
