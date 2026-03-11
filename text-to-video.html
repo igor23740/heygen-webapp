@@ -321,9 +321,6 @@ async function handleSubmit() {
     return;
   }
 
-  const LANG_MAP = { ru: 'Russian', en: 'English', es: 'Spanish', de: 'German', fr: 'French', zh: 'Chinese' };
-  const lang = document.getElementById('language')?.value || 'ru';
-
   const payload = {
     scenario: 'text_to_video',
     text: script,
@@ -331,7 +328,6 @@ async function handleSubmit() {
     user_id: String(user.id),
     avatar_name: AVATAR_MAP[state.avatarId] || 'Ann Business Front',
     voice_name: VOICE_MAP[state.voiceId] || 'Warm Pro Narrator',
-    output_language: LANG_MAP[lang] || 'Russian',
     resolution: '1080p',
     aspect_ratio: '16:9'
   };
