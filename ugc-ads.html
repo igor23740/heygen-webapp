@@ -404,9 +404,9 @@ const AVATAR_MAP = {
 };
 
 const VOICE_MAP = {
-  'voice_energetic_f': 'Ivy',
+  'voice_energetic_f': 'Cute Chloe - Friendly 😊',
   'voice_casual_m': 'Chill Brian',
-  'voice_warm_f': 'Warm Pro Narrator',
+  'voice_warm_f': 'Hope',
   'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️'
 };
 
@@ -426,7 +426,7 @@ async function handleSubmit() {
     chat_id: String(user.id),
     user_id: String(user.id),
     avatar_name: AVATAR_MAP[state.avatarId] || 'Abigail (Upper Body)',
-    voice_name: VOICE_MAP[state.voiceId] || 'Ivy',
+    voice_name: VOICE_MAP[state.voiceId] || 'Cute Chloe - Friendly 😊',
     avatar_style: 'closeUp',
     resolution: '1080p',
     aspect_ratio: document.getElementById('format')?.value === 'horizontal' ? '16:9' : document.getElementById('format')?.value === 'square' ? '1:1' : '9:16'

@@ -347,9 +347,9 @@ const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
 const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
 
 const VOICE_MAP = {
-  'voice_warm_f': 'Warm Pro Narrator',
+  'voice_warm_f': 'Hope',
   'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️',
-  'voice_energetic_f': 'Ivy',
+  'voice_energetic_f': 'Cute Chloe - Friendly 😊',
   'voice_calm_m': 'Mellow Marcus'
 };
 
@@ -386,7 +386,7 @@ async function handleSubmit() {
       chat_id: String(user.id),
       user_id: String(user.id),
       image_url: imageData,
-      voice_name: VOICE_MAP[state.voiceId] || 'Warm Pro Narrator',
+      voice_name: VOICE_MAP[state.voiceId] || 'Hope',
       talking_style: 'expressive',
       resolution: '1080p',
       aspect_ratio: '16:9'

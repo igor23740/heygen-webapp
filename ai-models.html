@@ -440,8 +440,8 @@ const MODEL_MAP = {
 };
 
 const VOICE_MAP = {
-  'voice_auto': 'Warm Pro Narrator',
-  'voice_warm_f': 'Warm Pro Narrator',
+  'voice_auto': 'Hope',
+  'voice_warm_f': 'Hope',
   'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️',
   'voice_none': ''
 };
@@ -464,8 +464,8 @@ async function handleSubmit() {
     chat_id: String(user.id),
     user_id: String(user.id),
     fal_model: MODEL_MAP[state.modelId] || 'fal-ai/heygen/avatar4/digital-twin',
-    avatar_name: 'Ann Business Front',
-    voice_name: voiceName !== undefined ? voiceName : 'Warm Pro Narrator',
+    avatar_name: 'Caroline Business Standing Front',
+    voice_name: voiceName !== undefined ? voiceName : 'Hope',
     resolution: '1080p',
     aspect_ratio: formatVal === 'vertical' ? '9:16' : formatVal === 'square' ? '1:1' : '16:9'
   };
