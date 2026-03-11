@@ -292,6 +292,7 @@ function showError(msg) {
 
 /* ===== Config ===== */
 const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
+const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
 
 const AVATAR_MAP = {
   'avatar_anna': 'Annie Office Standing Front',
@@ -343,10 +344,11 @@ async function handleSubmit() {
     if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
 
     const data = await res.json();
-    if (data.status !== 'accepted') throw new Error(data.error || 'Неожиданный ответ');
+    if (!data.request_id && !data.ok) throw new Error(data.error || 'Неожиданный ответ');
 
     state.requestId = data.request_id;
     showAccepted();
+    pollStatus(data.request_id);
   } catch (err) {
     showScreen('screen-form');
     if (tg) tg.MainButton.show();
@@ -356,17 +358,8 @@ async function handleSubmit() {
 
 /* ===== Accepted: animate + hint ===== */
 function showAccepted() {
-  const bar = document.getElementById('progressBar');
   const sub = document.querySelector('.progress-sub');
   sub.innerHTML = '✅ Запрос принят! Генерация занимает 2–5 минут.<br>Можете закрыть — бот пришлёт видео в чат.';
-
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.random() * 2 + 0.5;
-    if (progress >= 90) { progress = 90; clearInterval(interval); }
-    bar.style.width = progress + '%';
-  }, 3000);
-
   setTimeout(() => {
     if (tg) {
       tg.MainButton.setText('Закрыть');
@@ -375,6 +368,42 @@ function showAccepted() {
       tg.MainButton.onClick(() => tg.close());
     }
   }, 2000);
+}
+
+/* ===== Status Polling ===== */
+let pollTimer = null;
+function pollStatus(requestId) {
+  const bar = document.getElementById('progressBar');
+  const sub = document.querySelector('.progress-sub');
+  let elapsed = 0;
+  const poll = async () => {
+    elapsed += 5;
+    const pct = Math.min(elapsed / 300 * 90, 90);
+    bar.style.width = pct + '%';
+    try {
+      const res = await fetch(STATUS_URL + '?request_id=' + encodeURIComponent(requestId));
+      const d = await res.json();
+      if (d.status === 'completed') {
+        bar.style.width = '100%';
+        sub.innerHTML = '✅ Видео готово!';
+        const url = d.drive_url || d.video_url;
+        if (url) {
+          document.querySelector('.result-desc').innerHTML = 'Видео сгенерировано!<br><a href="' + url + '" target="_blank" style="color:var(--accent)">Скачать видео</a>';
+        }
+        showScreen('screen-result');
+        return;
+      }
+      if (d.status === 'failed') {
+        sub.innerHTML = '❌ ' + (d.error || 'Ошибка генерации');
+        showScreen('screen-form');
+        if (tg) tg.MainButton.show();
+        showError(d.error || 'Ошибка генерации');
+        return;
+      }
+    } catch (e) { /* network error, retry */ }
+    pollTimer = setTimeout(poll, 5000);
+  };
+  pollTimer = setTimeout(poll, 5000);
 }
 
 /* ===== Result buttons ===== */

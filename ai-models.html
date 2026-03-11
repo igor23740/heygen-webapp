@@ -428,50 +428,125 @@ function showError(msg) {
   setTimeout(() => el.classList.remove('show'), 4000);
 }
 
+/* ===== Config ===== */
+const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
+const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
+
+const VOICE_MAP = {
+  'voice_warm_f': 'Melissa',
+  'voice_confident_m': 'Melissa',
+  'voice_energetic_f': 'Melissa',
+  'voice_calm_m': 'Melissa'
+};
+
 /* ===== Submit ===== */
 async function handleSubmit() {
   const prompt = document.getElementById('promptText').value.trim();
-  const duration = document.getElementById('duration').value;
-  const format = document.getElementById('format').value;
-  const language = document.getElementById('language').value;
-  const quality = document.getElementById('quality').value;
 
   if (!prompt) { showError('Введите промпт — опишите, какое видео нужно создать'); return; }
   if (prompt.length < 15) { showError('Промпт слишком короткий — опишите подробнее'); return; }
 
+  const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if (!user || !user.id) { showError('Откройте через Telegram'); return; }
+
+  const payload = {
+    scenario: 'ai_models',
+    text: prompt,
+    chat_id: String(user.id),
+    user_id: String(user.id),
+    avatar_name: 'Annie Office Standing Front',
+    voice_name: VOICE_MAP[state.voiceId] || 'Melissa',
+    resolution: '1080p'
+  };
+
   showScreen('screen-progress');
   if (tg) tg.MainButton.hide();
 
-  /* === ЗАГЛУШКА === */
-  simulateProgress();
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
+    const data = await res.json();
+    if (!data.request_id && !data.ok) throw new Error(data.error || 'Неожиданный ответ');
+    state.requestId = data.request_id;
+    showAccepted();
+    pollStatus(data.request_id);
+  } catch (err) {
+    showScreen('screen-form');
+    if (tg) tg.MainButton.show();
+    showError(err.message);
+  }
 }
 
-function simulateProgress() {
-  const bar = document.getElementById('progressBar');
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.random() * 8 + 2;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(interval);
-      setTimeout(() => { showScreen('screen-result'); }, 600);
+function showAccepted() {
+  const sub = document.querySelector('.progress-sub');
+  sub.innerHTML = '✅ Запрос принят! Генерация занимает 2–5 минут.<br>Можете закрыть — бот пришлёт видео в чат.';
+  setTimeout(() => {
+    if (tg) {
+      tg.MainButton.setText('Закрыть');
+      tg.MainButton.show();
+      tg.MainButton.offEvent('mainButtonClicked', handleSubmit);
+      tg.MainButton.onClick(() => tg.close());
     }
-    bar.style.width = progress + '%';
-  }, 500);
+  }, 2000);
+}
+
+/* ===== Status Polling ===== */
+let pollTimer = null;
+function pollStatus(requestId) {
+  const bar = document.getElementById('progressBar');
+  const sub = document.querySelector('.progress-sub');
+  let elapsed = 0;
+  const poll = async () => {
+    elapsed += 5;
+    const pct = Math.min(elapsed / 300 * 90, 90);
+    bar.style.width = pct + '%';
+    try {
+      const res = await fetch(STATUS_URL + '?request_id=' + encodeURIComponent(requestId));
+      const d = await res.json();
+      if (d.status === 'completed') {
+        bar.style.width = '100%';
+        sub.innerHTML = '✅ Видео готово!';
+        const url = d.drive_url || d.video_url;
+        if (url) {
+          document.querySelector('.result-desc').innerHTML = 'Видео сгенерировано!<br><a href="' + url + '" target="_blank" style="color:var(--accent)">Скачать видео</a>';
+        }
+        showScreen('screen-result');
+        return;
+      }
+      if (d.status === 'failed') {
+        sub.innerHTML = '❌ ' + (d.error || 'Ошибка генерации');
+        showScreen('screen-form');
+        if (tg) tg.MainButton.show();
+        showError(d.error || 'Ошибка генерации');
+        return;
+      }
+    } catch (e) { /* network error, retry */ }
+    pollTimer = setTimeout(poll, 5000);
+  };
+  pollTimer = setTimeout(poll, 5000);
 }
 
 /* ===== Result ===== */
 document.getElementById('btnOpenVideo').addEventListener('click', () => {
-  if (tg) tg.showAlert('Здесь будет ссылка на готовое видео');
-  else alert('Здесь будет ссылка на готовое видео');
+  if (tg) tg.close();
 });
 
 document.getElementById('btnNewVideo').addEventListener('click', () => {
   document.getElementById('promptText').value = '';
   document.getElementById('progressBar').style.width = '0%';
+  if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
   resetUpload();
   showScreen('screen-form');
-  if (tg) { tg.MainButton.show(); }
+  if (tg) {
+    tg.MainButton.setText('Запустить генерацию');
+    tg.MainButton.offEvent('mainButtonClicked');
+    tg.MainButton.onClick(handleSubmit);
+    tg.MainButton.show();
+  }
 });
 </script>
 </body>
