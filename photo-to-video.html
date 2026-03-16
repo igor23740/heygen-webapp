@@ -224,7 +224,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <div class="form-group">
       <label class="form-label">Голос</label>
       <div class="card-grid" id="voiceGrid">
-        <div class="card-option selected" data-id="ralph">
+        <div class="card-option" data-id="ralph">
           <img class="avatar-photo" src="avatars/ralph.png" alt="Ralph" onerror="this.outerHTML='<div class=\'avatar-fallback\'>R</div>'">
           <div class="card-option-name">Ralph</div>
           <div class="card-option-desc">Мужской, деловой</div>
@@ -295,7 +295,7 @@ if (tg) {
 }
 
 let state = {
-  voiceId: 'ralph',
+  voiceId: null,
   photoFile: null,
   jobId: null
 };
@@ -411,6 +411,7 @@ function fileToBase64(file) {
 async function handleSubmit() {
   const script = document.getElementById('scriptText').value.trim();
 
+  if (!state.voiceId) { showError('Выберите голос'); return; }
   if (!state.photoFile) { showError('Загрузите фотографию'); return; }
   if (!script) { showError('Введите текст для озвучки'); return; }
   if (script.length < 10) { showError('Текст слишком короткий — минимум 10 символов'); return; }
@@ -430,7 +431,7 @@ async function handleSubmit() {
       chat_id: String(user.id),
       user_id: String(user.id),
       image_url: imageData,
-      voice_name: VOICE_MAP[state.voiceId] || 'Hope',
+      voice_name: VOICE_MAP[state.voiceId],
       talking_style: 'expressive',
       resolution: '1080p',
       aspect_ratio: '16:9'
