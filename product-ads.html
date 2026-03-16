@@ -79,16 +79,58 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 }
 .upload-zone.has-file .upload-remove{display:flex}
 
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* ===== AVATAR CARDS ===== */
+.card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .card-option{
-  padding:12px;background:var(--card);border:2px solid var(--card-border);border-radius:var(--radius-sm);
-  text-align:center;cursor:pointer;transition:all .2s;
+  padding:10px 8px 12px;
+  background:linear-gradient(145deg,#1e1e24 0%,#252530 100%);
+  border:2px solid var(--card-border);border-radius:var(--radius-sm);
+  text-align:center;cursor:pointer;
+  transition:all .25s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
 }
-.card-option:active{transform:scale(.97)}
-.card-option.selected{border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
-.card-option-icon{font-size:32px;margin-bottom:6px}
-.card-option-name{font-size:13px;font-weight:600}
-.card-option-desc{font-size:11px;color:var(--text-dim);margin-top:2px}
+.card-option::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(46,196,182,.05) 0%,transparent 60%);
+  opacity:0;transition:opacity .25s;
+}
+.card-option:hover::before,.card-option.selected::before{opacity:1}
+.card-option:active{transform:scale(.95)}
+.card-option.selected{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow),0 4px 12px rgba(0,0,0,.4)}
+
+.avatar-photo{
+  width:72px;height:72px;border-radius:50%;
+  object-fit:cover;object-position:center top;
+  margin:0 auto 8px;display:block;
+  border:2px solid var(--card-border);
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+  transition:border-color .25s;
+  background:var(--card);
+}
+.card-option.selected .avatar-photo{border-color:var(--accent)}
+
+.avatar-fallback{
+  width:72px;height:72px;border-radius:50%;
+  margin:0 auto 8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#2a2a36,#1e1e28);
+  border:2px solid var(--card-border);
+  font-size:24px;font-weight:700;color:var(--accent);
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+  transition:border-color .25s;
+}
+.card-option.selected .avatar-fallback{border-color:var(--accent)}
+
+.card-option-name{font-size:12px;font-weight:700;line-height:1.2}
+.card-option-desc{font-size:10px;color:var(--text-dim);margin-top:3px;line-height:1.3}
+.card-option-tag{
+  display:inline-block;margin-top:5px;padding:2px 8px;
+  border-radius:8px;font-size:9px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.tag-corporate{background:rgba(59,130,246,.15);color:#60a5fa}
+.tag-serious{background:rgba(139,92,246,.15);color:#a78bfa}
+.tag-friendly{background:rgba(251,191,36,.15);color:#fbbf24}
 
 .progress-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
 .spinner{width:56px;height:56px;border:3px solid var(--card-border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
@@ -194,51 +236,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <div class="form-group">
       <label class="form-label">Аватар-ведущий</label>
       <div class="card-grid" id="avatarGrid">
-        <div class="card-option selected" data-id="avatar_anna">
-          <div class="card-option-icon">👩‍💼</div>
-          <div class="card-option-name">Анна</div>
-          <div class="card-option-desc">Деловой стиль</div>
+        <div class="card-option selected" data-id="ralph">
+          <img class="avatar-photo" src="avatars/ralph.png" alt="Ralph" onerror="this.outerHTML='<div class=\'avatar-fallback\'>R</div>'">
+          <div class="card-option-name">Ralph</div>
+          <div class="card-option-desc">Мужчина, костюм</div>
+          <span class="card-option-tag tag-corporate">Корпоратив</span>
         </div>
-        <div class="card-option" data-id="avatar_dmitry">
-          <div class="card-option-icon">👨‍💻</div>
-          <div class="card-option-name">Дмитрий</div>
-          <div class="card-option-desc">Технический</div>
+        <div class="card-option" data-id="savannah">
+          <img class="avatar-photo" src="avatars/savannah.png" alt="Savannah" onerror="this.outerHTML='<div class=\'avatar-fallback\'>S</div>'">
+          <div class="card-option-name">Savannah</div>
+          <div class="card-option-desc">Женщина, бизнес</div>
+          <span class="card-option-tag tag-corporate">Корпоратив</span>
         </div>
-        <div class="card-option" data-id="avatar_maria">
-          <div class="card-option-icon">👩‍🎤</div>
-          <div class="card-option-name">Мария</div>
-          <div class="card-option-desc">Креативный</div>
+        <div class="card-option" data-id="douglas">
+          <img class="avatar-photo" src="avatars/douglas.png" alt="Douglas" onerror="this.outerHTML='<div class=\'avatar-fallback\'>D</div>'">
+          <div class="card-option-name">Douglas</div>
+          <div class="card-option-desc">Мужчина, строгий</div>
+          <span class="card-option-tag tag-serious">Серьёзный</span>
         </div>
-        <div class="card-option" data-id="avatar_alex">
-          <div class="card-option-icon">🧑‍🏫</div>
-          <div class="card-option-name">Алексей</div>
-          <div class="card-option-desc">Обучающий</div>
+        <div class="card-option" data-id="corsaro">
+          <img class="avatar-photo" src="avatars/corsaro.png" alt="Corsaro" onerror="this.outerHTML='<div class=\'avatar-fallback\'>C</div>'">
+          <div class="card-option-name">Corsaro</div>
+          <div class="card-option-desc">Женщина, элегант</div>
+          <span class="card-option-tag tag-serious">Серьёзный</span>
         </div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Голос</label>
-      <div class="card-grid" id="voiceGrid">
-        <div class="card-option selected" data-id="voice_warm_f">
-          <div class="card-option-icon">🎙️</div>
-          <div class="card-option-name">Тёплый (Ж)</div>
-          <div class="card-option-desc">Мягкий, дружелюбный</div>
+        <div class="card-option" data-id="emmett">
+          <img class="avatar-photo" src="avatars/emmett.png" alt="Emmett" onerror="this.outerHTML='<div class=\'avatar-fallback\'>E</div>'">
+          <div class="card-option-name">Emmett</div>
+          <div class="card-option-desc">Мужчина, casual</div>
+          <span class="card-option-tag tag-friendly">Дружелюбный</span>
         </div>
-        <div class="card-option" data-id="voice_confident_m">
-          <div class="card-option-icon">🎙️</div>
-          <div class="card-option-name">Уверенный (М)</div>
-          <div class="card-option-desc">Деловой, чёткий</div>
-        </div>
-        <div class="card-option" data-id="voice_energetic_f">
-          <div class="card-option-icon">🎙️</div>
-          <div class="card-option-name">Энергичный (Ж)</div>
-          <div class="card-option-desc">Яркий, динамичный</div>
-        </div>
-        <div class="card-option" data-id="voice_calm_m">
-          <div class="card-option-icon">🎙️</div>
-          <div class="card-option-name">Спокойный (М)</div>
-          <div class="card-option-desc">Нейтральный, ровный</div>
+        <div class="card-option" data-id="kendra">
+          <img class="avatar-photo" src="avatars/kendra.png" alt="Kendra" onerror="this.outerHTML='<div class=\'avatar-fallback\'>K</div>'">
+          <div class="card-option-name">Kendra</div>
+          <div class="card-option-desc">Женщина, тёплая</div>
+          <span class="card-option-tag tag-friendly">Дружелюбный</span>
         </div>
       </div>
     </div>
@@ -281,8 +313,7 @@ if (tg) {
 }
 
 let state = {
-  avatarId: 'avatar_anna',
-  voiceId: 'voice_warm_f',
+  avatarId: 'ralph',
   photoFile: null,
   jobId: null
 };
@@ -349,7 +380,6 @@ function initCardGrid(gridId, stateKey) {
   });
 }
 initCardGrid('avatarGrid', 'avatarId');
-initCardGrid('voiceGrid', 'voiceId');
 
 /* ===== MainButton ===== */
 if (tg) {
@@ -372,17 +402,12 @@ const WEBHOOK_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie';
 const STATUS_URL = 'https://5773171-do48756.twc1.net/webhook/videogenie-status';
 
 const AVATAR_MAP = {
-  'avatar_anna': 'Caroline Business Standing Front',
-  'avatar_dmitry': 'Artur Office Front',
-  'avatar_maria': 'Adriana Business Front',
-  'avatar_alex': 'Brandon Business Sitting Front'
-};
-
-const VOICE_MAP = {
-  'voice_warm_f': 'Hope',
-  'voice_confident_m': 'Jack Sterling - Broadcaster 🎙️',
-  'voice_energetic_f': 'Cute Chloe - Friendly 😊',
-  'voice_calm_m': 'Mellow Marcus'
+  'ralph':    'Ralph',
+  'savannah': 'Savannah',
+  'douglas':  'Douglas',
+  'corsaro':  'Corsaro',
+  'emmett':   'Emmett',
+  'kendra':   'Kendra'
 };
 
 /* ===== File to base64 ===== */
@@ -419,8 +444,8 @@ async function handleSubmit() {
       chat_id: String(user.id),
       user_id: String(user.id),
       image_url: imageData,
-      avatar_name: AVATAR_MAP[state.avatarId] || 'Caroline Business Standing Front',
-      voice_name: VOICE_MAP[state.voiceId] || 'Hope',
+      avatar_name: AVATAR_MAP[state.avatarId] || 'Ralph',
+      voice_name: AVATAR_MAP[state.avatarId] || 'Ralph',
       resolution: '1080p',
       aspect_ratio: document.getElementById('format')?.value === 'vertical' ? '9:16' : document.getElementById('format')?.value === 'square' ? '1:1' : '16:9'
     };
