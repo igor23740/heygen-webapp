@@ -201,7 +201,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
       <label class="form-label">Аватар</label>
       <div class="card-grid" id="avatarGrid">
 
-        <div class="card-option selected" data-id="ralph">
+        <div class="card-option" data-id="ralph">
           <img class="avatar-photo" src="avatars/ralph.png" alt="Ralph" onerror="this.outerHTML='<div class=\'avatar-fallback\'>R</div>'">
           <div class="card-option-name">Ralph</div>
           <div class="card-option-desc">Мужчина, костюм</div>
@@ -285,7 +285,7 @@ if (tg) {
 
 /* ===== State ===== */
 let state = {
-  avatarId: 'ralph',
+  avatarId: null,
   jobId: null
 };
 
@@ -341,6 +341,7 @@ const AVATAR_MAP = {
 async function handleSubmit() {
   const script = document.getElementById('scriptText').value.trim();
 
+  if (!state.avatarId) { showError('Выберите аватара'); return; }
   if (!script) { showError('Введите текст сценария'); return; }
   if (script.length < 10) { showError('Сценарий слишком короткий — минимум 10 символов'); return; }
 
@@ -355,8 +356,8 @@ async function handleSubmit() {
     text: script,
     chat_id: String(user.id),
     user_id: String(user.id),
-    avatar_name: AVATAR_MAP[state.avatarId] || 'Ralph',
-    voice_name: AVATAR_MAP[state.avatarId] || 'Ralph',
+    avatar_name: AVATAR_MAP[state.avatarId],
+    voice_name: AVATAR_MAP[state.avatarId],
     resolution: '1080p',
     aspect_ratio: '16:9'
   };
