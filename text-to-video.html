@@ -286,7 +286,8 @@ if (tg) {
 /* ===== State ===== */
 let state = {
   avatarId: null,
-  jobId: null
+  jobId: null,
+  submitted: false
 };
 
 /* ===== Screen switching ===== */
@@ -339,6 +340,8 @@ const AVATAR_MAP = {
 
 /* ===== Submit ===== */
 async function handleSubmit() {
+  if (state.submitted) return;
+
   const script = document.getElementById('scriptText').value.trim();
 
   if (!state.avatarId) { showError('Выберите аватара'); return; }
@@ -362,6 +365,7 @@ async function handleSubmit() {
     aspect_ratio: '16:9'
   };
 
+  state.submitted = true;
   showScreen('screen-progress');
   if (tg) tg.MainButton.hide();
 
@@ -381,6 +385,7 @@ async function handleSubmit() {
     showAccepted();
     pollStatus(data.request_id);
   } catch (err) {
+    state.submitted = false;
     showScreen('screen-form');
     if (tg) tg.MainButton.show();
     showError(err.message);
@@ -393,9 +398,9 @@ function showAccepted() {
   sub.innerHTML = '✅ Запрос принят! Генерация занимает 2–5 минут.<br>Можете закрыть — бот пришлёт видео в чат.';
   setTimeout(() => {
     if (tg) {
+      tg.MainButton.offClick(handleSubmit);
       tg.MainButton.setText('Закрыть');
       tg.MainButton.show();
-      tg.MainButton.offEvent('mainButtonClicked', handleSubmit);
       tg.MainButton.onClick(() => tg.close());
     }
   }, 2000);
@@ -443,12 +448,12 @@ document.getElementById('btnOpenVideo').addEventListener('click', () => {
 });
 
 document.getElementById('btnNewVideo').addEventListener('click', () => {
+  state.submitted = false;
   document.getElementById('scriptText').value = '';
   document.getElementById('progressBar').style.width = '0%';
   showScreen('screen-form');
   if (tg) {
     tg.MainButton.setText('Создать видео');
-    tg.MainButton.offEvent('mainButtonClicked');
     tg.MainButton.onClick(handleSubmit);
     tg.MainButton.show();
   }
