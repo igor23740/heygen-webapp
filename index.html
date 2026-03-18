@@ -116,7 +116,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <button class="nav-btn" data-target="s-ptv"><span class="nav-btn-text">📸 Фото → Видео</span></button>
     <button class="nav-btn" data-target="s-pa"><span class="nav-btn-text">🛒 Продуктовая реклама</span></button>
     <button class="nav-btn" data-target="s-ugc"><span class="nav-btn-text">🔥 UGC-ролики</span></button>
-    <button class="nav-btn" data-target="s-aim"><span class="nav-btn-text">🤖 AI-модели</span></button>
   </nav>
 
   <section class="section" id="s-ttv">
@@ -149,14 +148,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <p class="desc">Создавайте ролики с «живыми» реакциями и отзывами, которые выглядят как настоящий пользовательский контент.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
     <button class="cta-btn" onclick="go('ugc_ads')">Сгенерировать →</button>
-  </section>
-
-  <section class="section" id="s-aim">
-    <div class="section-label">🤖 AI-модели</div>
-    <h2>Творите с самыми мощными AI-моделями мира</h2>
-    <p class="desc">Выбирайте из библиотеки передовых AI-моделей для генерации видео, озвучки, монтажа и локализации — всё в одном месте.</p>
-    <div class="media-placeholder">Видео / GIF / Изображение</div>
-    <button class="cta-btn" onclick="go('ai_models')">Сгенерировать →</button>
   </section>
 
 </div>
@@ -256,8 +247,7 @@ function go(type) {
     'text_to_video': 'text-to-video.html',
     'photo_to_video': 'photo-to-video.html',
     'product_ads': 'product-ads.html',
-    'ugc_ads': 'ugc-ads.html',
-    'ai_models': 'ai-models.html'
+    'ugc_ads': 'ugc-ads.html'
   };
   if (pages[type]) {
     window.location.href = pages[type];
