@@ -136,6 +136,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
 }
 .btn-secondary:active{transform:scale(.97)}
 
+/* ===== LOOKS CAROUSEL ===== */
+.looks-section{display:none;margin-top:12px;animation:fadeIn .3s ease-out}
+.looks-section.active{display:block}
+.looks-label{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.looks-scroll{
+  display:flex;gap:10px;
+  overflow-x:auto;overflow-y:hidden;
+  padding:4px 0 12px;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.looks-scroll::-webkit-scrollbar{height:3px}
+.looks-scroll::-webkit-scrollbar-track{background:var(--card)}
+.looks-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+.look-card{
+  flex:0 0 110px;scroll-snap-align:start;
+  border:2px solid var(--card-border);border-radius:12px;
+  overflow:hidden;cursor:pointer;
+  transition:all .25s ease;
+  background:var(--card);
+}
+.look-card:active{transform:scale(.95)}
+.look-card.selected{border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
+.look-card img{
+  width:110px;height:110px;
+  object-fit:cover;object-position:center top;
+  display:block;
+}
+.look-card-label{
+  padding:4px 6px;text-align:center;
+  font-size:10px;color:var(--text-dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
 /* ===== ERROR ===== */
 .error-msg{padding:12px 16px;background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);border-radius:var(--radius-sm);color:#ff6b6b;font-size:13px;margin-bottom:16px;display:none}
 .error-msg.show{display:block;animation:fadeIn .3s ease-out}
@@ -244,6 +278,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
         </div>
 
       </div>
+
+      <!-- Looks carousel (appears when avatar with looks is selected) -->
+      <div class="looks-section" id="looksSection">
+        <div class="looks-label">Выберите образ</div>
+        <div class="looks-scroll" id="looksScroll"></div>
+      </div>
     </div>
 
   </div>
@@ -286,8 +326,23 @@ if (tg) {
 /* ===== State ===== */
 let state = {
   avatarId: null,
+  lookId: null,
   jobId: null,
   submitted: false
+};
+
+/* ===== Looks Data ===== */
+const LOOKS = {
+  'kendra': [
+    { id: 'fec676411ded4289b3e6bfc5ed9c96b9', img: 'avatars/looks/kendra-fec676.png', label: 'Офис, синяя' },
+    { id: 'f7dd42de56b944fcb30e6fb22f71f4f6', img: 'avatars/looks/kendra-f7dd42.png', label: 'Пиджак, полки' },
+    { id: 'e32955d5d28d41889ffba516be3a3549', img: 'avatars/looks/kendra-e32955.png', label: 'Свитер, лофт' },
+    { id: 'd01369becdd5416cbcbbad4cf78e2550', img: 'avatars/looks/kendra-d01369.png', label: 'Безрукавка' },
+    { id: 'c241203de782415fb9c89e30f9777230', img: 'avatars/looks/kendra-c24120.png', label: 'Окно, пиджак' },
+    { id: '7f75ee3f91b245c3887e43030ada8c14', img: 'avatars/looks/kendra-7f75ee.png', label: 'Крупный план' },
+    { id: '5dbaf7fab73f43b080056c6f04b1903a', img: 'avatars/looks/kendra-5dbaf7.png', label: 'За ноутбуком' },
+    { id: '34bf57eda456444194be53d8ab7a793c', img: 'avatars/looks/kendra-34bf57.png', label: 'Casual, свитер' }
+  ]
 };
 
 /* ===== Screen switching ===== */
@@ -305,9 +360,41 @@ function initCardGrid(gridId, stateKey) {
     grid.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     state[stateKey] = card.dataset.id;
+    showLooks(card.dataset.id);
   });
 }
 initCardGrid('avatarGrid', 'avatarId');
+
+/* ===== Looks carousel ===== */
+function showLooks(avatarId) {
+  const section = document.getElementById('looksSection');
+  const scroll = document.getElementById('looksScroll');
+  const looks = LOOKS[avatarId];
+
+  state.lookId = null;
+
+  if (!looks || looks.length === 0) {
+    section.classList.remove('active');
+    return;
+  }
+
+  scroll.innerHTML = looks.map(l =>
+    '<div class="look-card" data-look-id="' + l.id + '">' +
+      '<img src="' + l.img + '" alt="' + l.label + '">' +
+      '<div class="look-card-label">' + l.label + '</div>' +
+    '</div>'
+  ).join('');
+
+  section.classList.add('active');
+
+  scroll.addEventListener('click', (e) => {
+    const card = e.target.closest('.look-card');
+    if (!card) return;
+    scroll.querySelectorAll('.look-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.lookId = card.dataset.lookId;
+  });
+}
 
 /* ===== MainButton ===== */
 if (tg) {
@@ -345,6 +432,7 @@ async function handleSubmit() {
   const script = document.getElementById('scriptText').value.trim();
 
   if (!state.avatarId) { showError('Выберите аватара'); return; }
+  if (LOOKS[state.avatarId] && !state.lookId) { showError('Выберите образ аватара'); return; }
   if (!script) { showError('Введите текст сценария'); return; }
   if (script.length < 10) { showError('Сценарий слишком короткий — минимум 10 символов'); return; }
 
@@ -361,6 +449,7 @@ async function handleSubmit() {
     user_id: String(user.id),
     avatar_name: AVATAR_MAP[state.avatarId],
     voice_name: AVATAR_MAP[state.avatarId],
+    look_id: state.lookId || '',
     resolution: '1080p',
     aspect_ratio: '16:9'
   };
@@ -449,8 +538,10 @@ document.getElementById('btnOpenVideo').addEventListener('click', () => {
 
 document.getElementById('btnNewVideo').addEventListener('click', () => {
   state.submitted = false;
+  state.lookId = null;
   document.getElementById('scriptText').value = '';
   document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('looksSection').classList.remove('active');
   showScreen('screen-form');
   if (tg) {
     tg.MainButton.setText('Создать видео');
