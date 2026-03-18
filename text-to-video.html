@@ -147,9 +147,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
 }
-.looks-scroll::-webkit-scrollbar{height:3px}
-.looks-scroll::-webkit-scrollbar-track{background:var(--card)}
-.looks-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+.looks-scroll::-webkit-scrollbar{height:8px}
+.looks-scroll::-webkit-scrollbar-track{background:var(--card);border-radius:4px}
+.looks-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px;cursor:grab}
+.looks-scroll.dragging{cursor:grabbing;scroll-behavior:auto}
+.looks-scroll.dragging *{pointer-events:none}
 .look-card{
   flex:0 0 110px;scroll-snap-align:start;
   border:2px solid var(--card-border);border-radius:12px;
@@ -530,6 +532,31 @@ function pollStatus(requestId) {
   };
   pollTimer = setTimeout(poll, 5000);
 }
+
+/* ===== Looks scroll: drag + wheel ===== */
+(function() {
+  const el = document.getElementById('looksScroll');
+  let isDown = false, startX, scrollLeft;
+
+  el.addEventListener('mousedown', (e) => {
+    isDown = true; el.classList.add('dragging');
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+  });
+
+  el.addEventListener('wheel', (e) => {
+    if (el.scrollWidth <= el.clientWidth) return;
+    e.preventDefault();
+    el.scrollLeft += e.deltaY;
+  }, { passive: false });
+})();
 
 /* ===== Result buttons ===== */
 document.getElementById('btnOpenVideo').addEventListener('click', () => {
