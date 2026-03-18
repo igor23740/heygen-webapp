@@ -239,34 +239,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     <div class="form-group">
       <div class="select-row">
         <div>
-          <label class="form-label">Длительность</label>
-          <select class="form-select" id="duration">
-            <option value="15">15 секунд</option>
-            <option value="30" selected>30 секунд</option>
-            <option value="60">60 секунд</option>
+          <label class="form-label">Формат видео</label>
+          <select class="form-select" id="format">
+            <option value="16:9" selected>Горизонтальный 16:9</option>
+            <option value="9:16">Вертикальный 9:16</option>
+            <option value="1:1">Квадратный 1:1</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Формат</label>
-          <select class="form-select" id="format">
-            <option value="horizontal">Горизонтальный 16:9</option>
-            <option value="vertical">Вертикальный 9:16</option>
-            <option value="square">Квадратный 1:1</option>
+          <label class="form-label">Язык озвучки</label>
+          <select class="form-select" id="language">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+            <option value="zh">中文</option>
           </select>
         </div>
       </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Язык озвучки</label>
-      <select class="form-select" id="language">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="de">Deutsch</option>
-        <option value="fr">Français</option>
-        <option value="zh">中文</option>
-      </select>
     </div>
 
     <div class="form-group">
@@ -593,7 +584,7 @@ async function handleSubmit() {
       voice_name: AVATAR_MAP[state.avatarId],
       look_id: state.lookId || '',
       resolution: '1080p',
-      aspect_ratio: document.getElementById('format')?.value === 'vertical' ? '9:16' : document.getElementById('format')?.value === 'square' ? '1:1' : '16:9'
+      aspect_ratio: document.getElementById('format').value
     };
 
     const res = await fetch(WEBHOOK_URL, {

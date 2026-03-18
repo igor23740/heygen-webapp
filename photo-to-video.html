@@ -188,36 +188,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     </div>
 
     <div class="form-group">
-      <label class="form-label">Формат видео</label>
-      <div class="select-row" style="grid-template-columns:1fr 1fr 1fr">
-        <div class="card-option format-option selected" data-format="16:9" style="padding:12px 8px">
-          <div style="font-size:20px;margin-bottom:4px">🖥</div>
-          <div class="card-option-name">16:9</div>
-          <div class="card-option-desc">Горизонтальное</div>
+      <div class="select-row">
+        <div>
+          <label class="form-label">Формат видео</label>
+          <select class="form-select" id="format">
+            <option value="16:9" selected>Горизонтальный 16:9</option>
+            <option value="9:16">Вертикальный 9:16</option>
+            <option value="1:1">Квадратный 1:1</option>
+          </select>
         </div>
-        <div class="card-option format-option" data-format="9:16" style="padding:12px 8px">
-          <div style="font-size:20px;margin-bottom:4px">📱</div>
-          <div class="card-option-name">9:16</div>
-          <div class="card-option-desc">Вертикальное</div>
-        </div>
-        <div class="card-option format-option" data-format="1:1" style="padding:12px 8px">
-          <div style="font-size:20px;margin-bottom:4px">⬜</div>
-          <div class="card-option-name">1:1</div>
-          <div class="card-option-desc">Квадрат</div>
+        <div>
+          <label class="form-label">Язык озвучки</label>
+          <select class="form-select" id="language">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+            <option value="zh">中文</option>
+          </select>
         </div>
       </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Язык озвучки</label>
-      <select class="form-select" id="language">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="de">Deutsch</option>
-        <option value="fr">Français</option>
-        <option value="zh">中文</option>
-      </select>
     </div>
 
     <div class="form-group">
@@ -296,7 +287,6 @@ if (tg) {
 let state = {
   voiceId: null,
   photoFile: null,
-  aspectRatio: '16:9',
   jobId: null
 };
 
@@ -368,15 +358,6 @@ function initCardGrid(gridId, stateKey) {
 }
 initCardGrid('voiceGrid', 'voiceId');
 
-/* ===== Format selector ===== */
-document.querySelectorAll('.format-option').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.format-option').forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    state.aspectRatio = card.dataset.format;
-  });
-});
-
 /* ===== MainButton ===== */
 if (tg) {
   tg.MainButton.setText('Создать видео');
@@ -443,7 +424,7 @@ async function handleSubmit() {
       voice_name: VOICE_MAP[state.voiceId],
       talking_style: 'expressive',
       resolution: '1080p',
-      aspect_ratio: state.aspectRatio
+      aspect_ratio: document.getElementById('format').value
     };
 
     const res = await fetch(WEBHOOK_URL, {
