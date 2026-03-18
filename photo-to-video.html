@@ -188,23 +188,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Ro
     </div>
 
     <div class="form-group">
-      <div class="select-row">
-        <div>
-          <label class="form-label">Длительность</label>
-          <select class="form-select" id="duration">
-            <option value="15">15 секунд</option>
-            <option value="30" selected>30 секунд</option>
-            <option value="60">60 секунд</option>
-          </select>
+      <label class="form-label">Формат видео</label>
+      <div class="select-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="card-option format-option selected" data-format="16:9" style="padding:12px 8px">
+          <div style="font-size:20px;margin-bottom:4px">🖥</div>
+          <div class="card-option-name">16:9</div>
+          <div class="card-option-desc">Горизонтальное</div>
         </div>
-        <div>
-          <label class="form-label">Стиль</label>
-          <select class="form-select" id="style">
-            <option value="promo">Рекламный</option>
-            <option value="edu">Обучающий</option>
-            <option value="product">Продуктовый</option>
-            <option value="ugc">UGC</option>
-          </select>
+        <div class="card-option format-option" data-format="9:16" style="padding:12px 8px">
+          <div style="font-size:20px;margin-bottom:4px">📱</div>
+          <div class="card-option-name">9:16</div>
+          <div class="card-option-desc">Вертикальное</div>
+        </div>
+        <div class="card-option format-option" data-format="1:1" style="padding:12px 8px">
+          <div style="font-size:20px;margin-bottom:4px">⬜</div>
+          <div class="card-option-name">1:1</div>
+          <div class="card-option-desc">Квадрат</div>
         </div>
       </div>
     </div>
@@ -297,6 +296,7 @@ if (tg) {
 let state = {
   voiceId: null,
   photoFile: null,
+  aspectRatio: '16:9',
   jobId: null
 };
 
@@ -368,6 +368,15 @@ function initCardGrid(gridId, stateKey) {
 }
 initCardGrid('voiceGrid', 'voiceId');
 
+/* ===== Format selector ===== */
+document.querySelectorAll('.format-option').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.format-option').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.aspectRatio = card.dataset.format;
+  });
+});
+
 /* ===== MainButton ===== */
 if (tg) {
   tg.MainButton.setText('Создать видео');
@@ -434,7 +443,7 @@ async function handleSubmit() {
       voice_name: VOICE_MAP[state.voiceId],
       talking_style: 'expressive',
       resolution: '1080p',
-      aspect_ratio: '16:9'
+      aspect_ratio: state.aspectRatio
     };
 
     const res = await fetch(WEBHOOK_URL, {
