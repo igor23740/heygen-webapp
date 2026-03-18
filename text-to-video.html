@@ -536,20 +536,32 @@ function pollStatus(requestId) {
 /* ===== Looks scroll: drag + wheel ===== */
 (function() {
   const el = document.getElementById('looksScroll');
-  let isDown = false, startX, scrollLeft;
+  let isDown = false, isDragging = false, startX, scrollLeft;
 
   el.addEventListener('mousedown', (e) => {
-    isDown = true; el.classList.add('dragging');
+    isDown = true; isDragging = false;
     startX = e.pageX - el.offsetLeft;
     scrollLeft = el.scrollLeft;
   });
-  el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
-  el.addEventListener('mouseup', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseleave', () => { isDown = false; isDragging = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup', () => { isDown = false; setTimeout(() => { isDragging = false; el.classList.remove('dragging'); }, 0); });
   el.addEventListener('mousemove', (e) => {
     if (!isDown) return;
-    e.preventDefault();
-    el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+    const dx = e.pageX - el.offsetLeft - startX;
+    if (Math.abs(dx) > 5 && !isDragging) {
+      isDragging = true;
+      el.classList.add('dragging');
+    }
+    if (isDragging) {
+      e.preventDefault();
+      el.scrollLeft = scrollLeft - dx;
+    }
   });
+
+  // Block click on cards if we just dragged
+  el.addEventListener('click', (e) => {
+    if (isDragging) { e.stopPropagation(); return; }
+  }, true);
 
   el.addEventListener('wheel', (e) => {
     if (el.scrollWidth <= el.clientWidth) return;
