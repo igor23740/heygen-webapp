@@ -124,18 +124,24 @@
     .sec-body {
       display: grid;
       grid-template-rows: 0fr;
-      transition: grid-template-rows 0.35s var(--ease-out);
+      transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .section.is-open .sec-body {
       grid-template-rows: 1fr;
     }
     .sec-body-inner {
       overflow: hidden;
+      opacity: 0;
+      transform: translateY(-6px);
       border-top: 1px solid transparent;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.4s ease,
+                  opacity 0.35s ease 0.05s,
+                  transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.05s;
     }
     .section.is-open .sec-body-inner {
       border-color: var(--card-border);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* question buttons */
