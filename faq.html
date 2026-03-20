@@ -213,16 +213,21 @@
     .answer { display: none; }
     .answer.is-visible {
       display: block;
-      animation: fadeUp 0.28s var(--ease-out) both;
+      animation: fadeUp 0.32s var(--ease-out) both;
+    }
+    .answer.is-leaving {
+      display: block;
+      animation: fadeDown 0.18s cubic-bezier(0.4, 0, 1, 1) both;
+      pointer-events: none;
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    @supports (animation-composition: accumulate) {
-      .answer.is-visible { animation-fill-mode: both; }
+    @keyframes fadeDown {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(-10px); }
     }
 
     .ans-cat {
@@ -247,7 +252,7 @@
 
     .ans-body {
       font-size: clamp(14px, 1.9vw, 15.5px);
-      line-height: 1.78; color: #c9d1d9;
+      line-height: 1.78; color: var(--text);
     }
     .ans-body p { margin-bottom: 14px; }
     .ans-body p:last-child { margin-bottom: 0; }
@@ -670,11 +675,8 @@ function pick(e, el) {
   // Render
   const ph  = document.getElementById('placeholder');
   const ans = document.getElementById('answer');
-  ph.style.display = 'none';
-  ans.classList.remove('is-visible');
-  void ans.offsetWidth; // reflow → restart animation
 
-  ans.innerHTML = `
+  const newContent = `
     <p class="ans-cat">${cat.label}</p>
     <h1 class="ans-q">${item.q}</h1>
     <div class="ans-rule"></div>
@@ -690,10 +692,24 @@ function pick(e, el) {
       </div>` : ''}
     ${item.tags ? `<div class="tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
   `;
-  ans.classList.add('is-visible');
 
-  history.replaceState(null, '', '#' + itemId);
-  if (window.innerWidth < 768) closeSidebar();
+  const applyNew = () => {
+    ph.style.display = 'none';
+    ans.className = '';
+    ans.innerHTML = newContent;
+    void ans.offsetWidth;
+    ans.classList.add('is-visible');
+    history.replaceState(null, '', '#' + itemId);
+    if (window.innerWidth < 768) closeSidebar();
+  };
+
+  if (ans.classList.contains('is-visible')) {
+    ans.classList.remove('is-visible');
+    ans.classList.add('is-leaving');
+    ans.addEventListener('animationend', applyNew, { once: true });
+  } else {
+    applyNew();
+  }
 }
 
 /* ── MOBILE SIDEBAR ───────────────────────────────────────── */

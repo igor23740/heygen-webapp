@@ -117,7 +117,7 @@
     }
     .q-text {
       font-size: 14px; font-weight: 400; line-height: 1.4;
-      color: var(--muted); flex: 1;
+      color: var(--text); flex: 1;
     }
     .q-arrow {
       width: 14px; height: 14px; color: var(--subtle); flex-shrink: 0;
@@ -246,6 +246,10 @@ function openFaq(id) {
 if (window.Telegram?.WebApp) {
   Telegram.WebApp.ready();
   Telegram.WebApp.expand();
+  Telegram.WebApp.BackButton.show();
+  Telegram.WebApp.BackButton.onClick(() => {
+    window.history.length > 1 ? window.history.back() : window.location.href = 'index.html';
+  });
 }
 </script>
 </body>
