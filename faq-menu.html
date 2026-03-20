@@ -2,152 +2,222 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <title>VideoGenie — Вопросы</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg:       #0d1117;
-      --card:     #161b22;
-      --border:   rgba(46,196,182,0.13);
-      --teal:     #2ec4b6;
-      --teal-dim: rgba(46,196,182,0.10);
-      --text:     #e6edf3;
-      --muted:    #8b949e;
-      --subtle:   #484f58;
-      --radius:   12px;
-      --ease:     cubic-bezier(0.22, 1, 0.36, 1);
+      --bg:           #0b0b0e;
+      --surface:      #161619;
+      --card:         #1e1e24;
+      --card-border:  #2a2a32;
+      --accent:       #2ec4b6;
+      --accent-dark:  #239e93;
+      --accent-glow:  rgba(46,196,182,0.18);
+      --text:         #f2f2f4;
+      --text-dim:     #9a9aa6;
+      --radius:       18px;
+      --radius-sm:    14px;
+      --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                   'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 16px);
-      -webkit-font-smoothing: antialiased;
-      touch-action: manipulation;
       overscroll-behavior: contain;
+      touch-action: manipulation;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── HEADER ── */
+    .app { max-width: 430px; margin: 0 auto; padding-bottom: 32px; }
+
+    /* ── HEADER ─────────────────────────────────────── */
     .header {
-      padding: 20px 18px 16px;
-      border-bottom: 1px solid var(--border);
+      padding: 24px 20px 18px;
+      animation: rise 0.5s var(--ease-out) both;
     }
     .header-row {
       display: flex; align-items: center; gap: 10px;
       margin-bottom: 6px;
     }
     .logo {
-      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--teal) 0%, #1a8a80 100%);
+      width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px var(--accent-glow);
     }
-    .logo svg { width: 13px; height: 13px; }
+    .logo svg { width: 16px; height: 16px; }
     .header-title {
-      font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+      font-size: 19px; font-weight: 800; letter-spacing: -0.03em;
     }
-    .header-title em { color: var(--teal); font-style: normal; }
+    .header-title em { color: var(--accent); font-style: normal; }
     .header-sub {
-      font-size: 13px; color: var(--muted); line-height: 1.4;
+      font-size: 14px; color: var(--text-dim); line-height: 1.4;
       padding-left: 2px;
     }
 
-    /* ── SECTIONS ── */
-    .sections { padding: 16px 14px 32px; display: flex; flex-direction: column; gap: 10px; }
+    /* ── SECTIONS ───────────────────────────────────── */
+    .sections {
+      padding: 4px 14px 0;
+      display: flex; flex-direction: column; gap: 8px;
+      animation: rise 0.5s var(--ease-out) 0.1s both;
+    }
 
-    .section { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .section {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .section.is-open {
+      border-color: rgba(46,196,182,0.28);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
 
     /* section header */
     .sec-head {
       display: flex; align-items: center; gap: 10px;
-      padding: 13px 16px;
-      background: var(--card);
+      padding: 16px 16px;
       cursor: pointer; user-select: none;
-      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      transition: background 0.18s ease;
     }
-    .sec-icon { width: 15px; height: 15px; color: var(--teal); flex-shrink: 0; }
+    .sec-head:active { background: rgba(46,196,182,0.07); }
+
+    .sec-icon {
+      width: 17px; height: 17px;
+      color: var(--accent); flex-shrink: 0;
+    }
     .sec-label {
       font-size: 12px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--muted); flex: 1;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text-dim); flex: 1;
     }
     .sec-count {
       font-size: 11px; font-weight: 600;
-      padding: 2px 7px; border-radius: 20px;
-      background: var(--teal-dim); color: var(--teal);
+      padding: 2px 8px; border-radius: 20px;
+      background: rgba(46,196,182,0.12);
+      color: var(--accent);
     }
     .sec-arrow {
-      width: 14px; height: 14px; color: var(--subtle);
-      transition: transform 0.22s var(--ease);
+      width: 15px; height: 15px;
+      color: #3a3a44; flex-shrink: 0;
+      transition: transform 0.3s var(--ease-out), color 0.2s ease;
     }
-    .section.is-open .sec-arrow { transform: rotate(90deg); }
+    .section.is-open .sec-arrow {
+      transform: rotate(90deg);
+      color: var(--accent);
+    }
 
-    /* questions */
+    /* smooth accordion via CSS Grid */
     .sec-body {
-      background: var(--bg);
-      max-height: 0; overflow: hidden;
-      transition: max-height 0.32s var(--ease);
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s var(--ease-out);
     }
-    .section.is-open .sec-body { max-height: 500px; }
+    .section.is-open .sec-body {
+      grid-template-rows: 1fr;
+    }
+    .sec-body-inner {
+      overflow: hidden;
+      border-top: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+    .section.is-open .sec-body-inner {
+      border-color: var(--card-border);
+    }
 
+    /* question buttons */
     .q-btn {
       display: flex; align-items: center;
-      width: 100%; padding: 13px 16px;
+      width: 100%; padding: 14px 16px;
       border: none; background: transparent;
-      text-align: left; cursor: pointer;
-      gap: 12px;
+      text-align: left; cursor: pointer; gap: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
-      transition: background 0.16s;
+      transition: background 0.15s ease;
       -webkit-tap-highlight-color: transparent;
+      position: relative;
     }
     .q-btn:last-child { border-bottom: none; }
-    .q-btn:active { background: var(--teal-dim); }
+
+    .q-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .q-btn:active::before { opacity: 0.08; }
+    .q-btn:active { background: rgba(46,196,182,0.05); }
 
     .q-dot {
       width: 5px; height: 5px; border-radius: 50%;
-      background: var(--teal); flex-shrink: 0;
-      opacity: 0.6;
+      background: var(--accent); flex-shrink: 0;
+      opacity: 0.5;
     }
     .q-text {
-      font-size: 14px; font-weight: 400; line-height: 1.4;
+      font-size: 16px; font-weight: 400; line-height: 1.45;
       color: var(--text); flex: 1;
     }
     .q-arrow {
-      width: 14px; height: 14px; color: var(--subtle); flex-shrink: 0;
+      width: 14px; height: 14px;
+      color: #3a3a44; flex-shrink: 0;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .q-btn:active .q-arrow {
+      transform: translateX(3px);
+      color: var(--accent);
     }
 
-    /* ── FOOTER ── */
+    /* ── FOOTER ─────────────────────────────────────── */
     .footer {
-      text-align: center;
-      padding: 0 18px 8px;
-      font-size: 12px; color: var(--subtle);
+      text-align: center; padding: 20px 18px 4px;
+      font-size: 12px; color: #3a3a44;
+      animation: rise 0.5s var(--ease-out) 0.2s both;
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
 <body>
+<div class="app">
 
-<div class="header">
-  <div class="header-row">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
+  <div class="header">
+    <div class="header-row">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+      </div>
+      <span class="header-title">Video<em>Genie</em></span>
     </div>
-    <span class="header-title">Video<em>Genie</em></span>
+    <p class="header-sub">Частые вопросы — выберите нужный</p>
   </div>
-  <p class="header-sub">Частые вопросы — выберите нужный</p>
+
+  <div class="sections" id="sections"></div>
+
+  <p class="footer">Нажмите на вопрос, чтобы прочитать ответ</p>
+
 </div>
-
-<div class="sections" id="sections"></div>
-
-<p class="footer">Нажмите на вопрос, чтобы прочитать ответ</p>
 
 <script>
 const FAQ_URL = 'https://igor23740.github.io/heygen-webapp/faq.html';
@@ -155,83 +225,100 @@ const FAQ_URL = 'https://igor23740.github.io/heygen-webapp/faq.html';
 const SECTIONS = [
   {
     label: 'Как это работает',
-    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`,
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>`,
     items: [
-      { q: 'Что такое VideoGenie?',             id: 'what-is'    },
-      { q: 'Как создать видео?',                id: 'how-create' },
-      { q: 'Сколько времени занимает генерация?', id: 'how-long' }
+      { q: 'Что такое VideoGenie?',               id: 'what-is'    },
+      { q: 'Как создать видео?',                  id: 'how-create' },
+      { q: 'Сколько времени занимает генерация?', id: 'how-long'   }
     ]
   },
   {
     label: 'Аватары и голоса',
-    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
     items: [
-      { q: 'Какие аватары доступны?',    id: 'avatars-list' },
-      { q: 'Можно ли загрузить своё фото?', id: 'own-photo' },
-      { q: 'Какие языки поддерживаются?', id: 'languages'   }
+      { q: 'Какие аватары доступны?',        id: 'avatars-list' },
+      { q: 'Можно ли загрузить своё фото?',  id: 'own-photo'    },
+      { q: 'Какие языки поддерживаются?',    id: 'languages'    }
     ]
   },
   {
     label: 'Форматы и качество',
-    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
     items: [
-      { q: 'Чем отличается HeyGen v2 от v4?',   id: 'v2-vs-v4'  },
-      { q: 'Какое разрешение у видео?',          id: 'resolution' },
-      { q: 'Какой формат выбрать (16:9, 9:16)?', id: 'format'     }
+      { q: 'Чем отличается HeyGen v2 от v4?',    id: 'v2-vs-v4'   },
+      { q: 'Какое разрешение у видео?',           id: 'resolution' },
+      { q: 'Какой формат выбрать (16:9, 9:16)?',  id: 'format'     }
     ]
   },
   {
     label: 'Получение видео',
-    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
     items: [
-      { q: 'Куда придёт готовое видео?',          id: 'where'       },
-      { q: 'Почему видео долго генерируется?',     id: 'slow'        },
-      { q: 'Почему видео не пришло?',              id: 'no-video'    },
-      { q: 'Сколько хранится ссылка на видео?',    id: 'link-expiry' }
+      { q: 'Куда придёт готовое видео?',           id: 'where'       },
+      { q: 'Почему видео долго генерируется?',      id: 'slow'        },
+      { q: 'Почему видео не пришло?',               id: 'no-video'    },
+      { q: 'Сколько хранится ссылка на видео?',     id: 'link-expiry' }
     ]
   },
   {
     label: 'Оплата',
-    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
     items: [
-      { q: 'Сколько стоит генерация?',   id: 'price'    },
-      { q: 'Что такое Telegram Stars?',  id: 'stars'    },
-      { q: 'Как оплатить?',              id: 'how-pay'  }
+      { q: 'Сколько стоит генерация?',   id: 'price'   },
+      { q: 'Что такое Telegram Stars?',  id: 'stars'   },
+      { q: 'Как оплатить?',              id: 'how-pay' }
     ]
   }
 ];
 
 // Render
 const container = document.getElementById('sections');
+
 SECTIONS.forEach((sec, si) => {
   const el = document.createElement('div');
   el.className = 'section' + (si === 0 ? ' is-open' : '');
+
+  const itemsHtml = sec.items.map(item => `
+    <button class="q-btn" data-id="${item.id}">
+      <span class="q-dot"></span>
+      <span class="q-text">${item.q}</span>
+      <svg class="q-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  `).join('');
+
   el.innerHTML = `
-    <div class="sec-head" onclick="toggle(this.parentElement)">
+    <div class="sec-head" role="button" aria-expanded="${si === 0}">
       ${sec.icon}
       <span class="sec-label">${sec.label}</span>
       <span class="sec-count">${sec.items.length}</span>
-      <svg class="sec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <svg class="sec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="9 18 15 12 9 6"/>
       </svg>
     </div>
     <div class="sec-body">
-      ${sec.items.map(item => `
-        <button class="q-btn" onclick="openFaq('${item.id}')">
-          <span class="q-dot"></span>
-          <span class="q-text">${item.q}</span>
-          <svg class="q-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </button>
-      `).join('')}
+      <div class="sec-body-inner">${itemsHtml}</div>
     </div>`;
+
   container.appendChild(el);
 });
 
-function toggle(el) {
-  el.classList.toggle('is-open');
-}
+// Toggle section
+container.addEventListener('click', e => {
+  const head = e.target.closest('.sec-head');
+  if (head) {
+    const section = head.parentElement;
+    const isOpen = section.classList.toggle('is-open');
+    head.setAttribute('aria-expanded', isOpen);
+    return;
+  }
+
+  const btn = e.target.closest('.q-btn');
+  if (btn) {
+    openFaq(btn.dataset.id);
+  }
+});
 
 function openFaq(id) {
   const url = FAQ_URL + '#' + id;
@@ -248,7 +335,9 @@ if (window.Telegram?.WebApp) {
   Telegram.WebApp.expand();
   Telegram.WebApp.BackButton.show();
   Telegram.WebApp.BackButton.onClick(() => {
-    window.history.length > 1 ? window.history.back() : window.location.href = 'index.html';
+    window.history.length > 1
+      ? window.history.back()
+      : (window.location.href = 'index.html');
   });
 }
 </script>
