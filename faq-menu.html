@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>VideoGenie — Вопросы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --card:     #161b22;
+      --border:   rgba(46,196,182,0.13);
+      --teal:     #2ec4b6;
+      --teal-dim: rgba(46,196,182,0.10);
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --subtle:   #484f58;
+      --radius:   12px;
+      --ease:     cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 16px);
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      overscroll-behavior: contain;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .logo {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--teal) 0%, #1a8a80 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo svg { width: 13px; height: 13px; }
+    .header-title {
+      font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .header-title em { color: var(--teal); font-style: normal; }
+    .header-sub {
+      font-size: 13px; color: var(--muted); line-height: 1.4;
+      padding-left: 2px;
+    }
+
+    /* ── SECTIONS ── */
+    .sections { padding: 16px 14px 32px; display: flex; flex-direction: column; gap: 10px; }
+
+    .section { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+
+    /* section header */
+    .sec-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 16px;
+      background: var(--card);
+      cursor: pointer; user-select: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-icon { width: 15px; height: 15px; color: var(--teal); flex-shrink: 0; }
+    .sec-label {
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); flex: 1;
+    }
+    .sec-count {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 7px; border-radius: 20px;
+      background: var(--teal-dim); color: var(--teal);
+    }
+    .sec-arrow {
+      width: 14px; height: 14px; color: var(--subtle);
+      transition: transform 0.22s var(--ease);
+    }
+    .section.is-open .sec-arrow { transform: rotate(90deg); }
+
+    /* questions */
+    .sec-body {
+      background: var(--bg);
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.32s var(--ease);
+    }
+    .section.is-open .sec-body { max-height: 500px; }
+
+    .q-btn {
+      display: flex; align-items: center;
+      width: 100%; padding: 13px 16px;
+      border: none; background: transparent;
+      text-align: left; cursor: pointer;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.16s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .q-btn:last-child { border-bottom: none; }
+    .q-btn:active { background: var(--teal-dim); }
+
+    .q-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--teal); flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .q-text {
+      font-size: 14px; font-weight: 400; line-height: 1.4;
+      color: var(--muted); flex: 1;
+    }
+    .q-arrow {
+      width: 14px; height: 14px; color: var(--subtle); flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 0 18px 8px;
+      font-size: 12px; color: var(--subtle);
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+    </div>
+    <span class="header-title">Video<em>Genie</em></span>
+  </div>
+  <p class="header-sub">Частые вопросы — выберите нужный</p>
+</div>
+
+<div class="sections" id="sections"></div>
+
+<p class="footer">Нажмите на вопрос, чтобы прочитать ответ</p>
+
+<script>
+const FAQ_URL = 'https://igor23740.github.io/heygen-webapp/faq.html';
+
+const SECTIONS = [
+  {
+    label: 'Как это работает',
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`,
+    items: [
+      { q: 'Что такое VideoGenie?',             id: 'what-is'    },
+      { q: 'Как создать видео?',                id: 'how-create' },
+      { q: 'Сколько времени занимает генерация?', id: 'how-long' }
+    ]
+  },
+  {
+    label: 'Аватары и голоса',
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    items: [
+      { q: 'Какие аватары доступны?',    id: 'avatars-list' },
+      { q: 'Можно ли загрузить своё фото?', id: 'own-photo' },
+      { q: 'Какие языки поддерживаются?', id: 'languages'   }
+    ]
+  },
+  {
+    label: 'Форматы и качество',
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+    items: [
+      { q: 'Чем отличается HeyGen v2 от v4?',   id: 'v2-vs-v4'  },
+      { q: 'Какое разрешение у видео?',          id: 'resolution' },
+      { q: 'Какой формат выбрать (16:9, 9:16)?', id: 'format'     }
+    ]
+  },
+  {
+    label: 'Получение видео',
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    items: [
+      { q: 'Куда придёт готовое видео?',          id: 'where'       },
+      { q: 'Почему видео долго генерируется?',     id: 'slow'        },
+      { q: 'Почему видео не пришло?',              id: 'no-video'    },
+      { q: 'Сколько хранится ссылка на видео?',    id: 'link-expiry' }
+    ]
+  },
+  {
+    label: 'Оплата',
+    icon: `<svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+    items: [
+      { q: 'Сколько стоит генерация?',   id: 'price'    },
+      { q: 'Что такое Telegram Stars?',  id: 'stars'    },
+      { q: 'Как оплатить?',              id: 'how-pay'  }
+    ]
+  }
+];
+
+// Render
+const container = document.getElementById('sections');
+SECTIONS.forEach((sec, si) => {
+  const el = document.createElement('div');
+  el.className = 'section' + (si === 0 ? ' is-open' : '');
+  el.innerHTML = `
+    <div class="sec-head" onclick="toggle(this.parentElement)">
+      ${sec.icon}
+      <span class="sec-label">${sec.label}</span>
+      <span class="sec-count">${sec.items.length}</span>
+      <svg class="sec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </div>
+    <div class="sec-body">
+      ${sec.items.map(item => `
+        <button class="q-btn" onclick="openFaq('${item.id}')">
+          <span class="q-dot"></span>
+          <span class="q-text">${item.q}</span>
+          <svg class="q-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      `).join('')}
+    </div>`;
+  container.appendChild(el);
+});
+
+function toggle(el) {
+  el.classList.toggle('is-open');
+}
+
+function openFaq(id) {
+  const url = FAQ_URL + '#' + id;
+  if (window.Telegram?.WebApp) {
+    Telegram.WebApp.openLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+}
+
+// Telegram WebApp init
+if (window.Telegram?.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
+</script>
+</body>
+</html>

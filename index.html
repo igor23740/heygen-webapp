@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>VideoGenie — Генерация</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0b0b0e;--surface:#161619;--card:#1e1e24;--card-border:#2a2a32;--accent:#2ec4b6;--accent-dark:#239e93;--accent-glow:rgba(46,196,182,0.18);--text:#f2f2f4;--text-dim:#9a9aa6;--radius:18px;--radius-sm:14px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;touch-action:manipulation;overscroll-behavior:contain}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 .app{max-width:430px;margin:0 auto;min-height:100vh;position:relative}
 
 .hero{padding:40px 20px 28px;text-align:center}
@@ -83,6 +80,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI'
   box-shadow:0 1px 6px var(--accent-glow),0 1px 3px rgba(0,0,0,.3);
 }
 
+
 /* ===== SECTIONS ===== */
 .section{padding:48px 20px 40px;opacity:0;transform:translateY(30px);transition:all .55s cubic-bezier(.25,.46,.45,.94)}
 .section.visible{opacity:1;transform:translateY(0)}
@@ -103,33 +101,28 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI'
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .hero{animation:rise .6s ease-out}
 .nav{animation:rise .6s ease-out .1s both}
-
-.icon{width:20px;height:20px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hero-icon{width:48px;height:48px;color:var(--accent);margin:0 auto 12px}
-.hero-icon .icon{width:48px;height:48px;stroke-width:1.5}
-.section-icon{width:20px;height:20px;vertical-align:-3px;margin-right:2px}
-
-@media(prefers-reduced-motion:reduce){*,.section,.hero,.nav{animation:none!important;transition-duration:0.01ms!important}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
 
   <section class="hero" id="top">
-    <div class="hero-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M4 8V4a2 2 0 0 1 2-2h2"/><path d="M4 16v4a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 8-2 2"/></svg></div>
+    <div class="hero-logo">🎬</div>
     <h1>VideoGenie <br>теперь твоя<br><span class="accent-word">суперсила</span></h1>
     <p>Создавай маркетинговые, обучающие и продающие видео из единого рабочего пространства — быстро, качественно и без камеры.</p>
   </section>
 
   <nav class="nav" id="nav">
-    <button class="nav-btn" data-target="s-ttv"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg><span class="nav-btn-text">Текст → Видео</span></button>
-    <button class="nav-btn" data-target="s-ptv"><svg class="icon" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg><span class="nav-btn-text">Фото → Видео</span></button>
-    <button class="nav-btn" data-target="s-pa"><svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="nav-btn-text">Продуктовая реклама</span></button>
-    <button class="nav-btn" data-target="s-ugc"><svg class="icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></svg><span class="nav-btn-text">Распаковки и обзоры</span></button>
+    <button class="nav-btn" data-target="s-ttv"><span class="nav-btn-text">🎤 Текст → Видео</span></button>
+    <button class="nav-btn" data-target="s-ptv"><span class="nav-btn-text">📸 Фото → Видео</span></button>
+    <button class="nav-btn" data-target="s-pa"><span class="nav-btn-text">🛒 Продуктовая реклама</span></button>
+    <button class="nav-btn" data-target="s-ugc"><span class="nav-btn-text">🔥 UGC-ролики</span></button>
+    <button class="nav-btn" data-target="s-aim"><span class="nav-btn-text">🤖 AI-модели</span></button>
+    <button class="nav-btn" data-target="faq"><span class="nav-btn-text">❓ Частые вопросы</span></button>
   </nav>
 
   <section class="section" id="s-ttv">
-    <div class="section-label"><svg class="icon section-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg> Текст → Видео</div>
+    <div class="section-label">🎤 Текст → Видео</div>
     <h2>Превратите текст в видео с помощью ИИ</h2>
     <p class="desc">Просто вставьте сценарий — и получите готовый ролик с реалистичным AI-ведущим, озвучкой и субтитрами. Камера не нужна.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
@@ -137,7 +130,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI'
   </section>
 
   <section class="section" id="s-ptv">
-    <div class="section-label"><svg class="icon section-icon" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg> Фото → Видео</div>
+    <div class="section-label">📸 Фото → Видео</div>
     <h2>Оживите фотографии за секунды</h2>
     <p class="desc">Загрузите портретное фото — и оно заговорит. Идеально для аватаров, приветствий и персонализированных обращений.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
@@ -145,7 +138,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI'
   </section>
 
   <section class="section" id="s-pa">
-    <div class="section-label"><svg class="icon section-icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Продуктовая реклама</div>
+    <div class="section-label">🛒 Продуктовая реклама</div>
     <h2>Размещение продукта без съёмочной площадки</h2>
     <p class="desc">Загрузите фото товара — нейросеть сама создаст рекламный ролик с фоном, сценарием и ведущим.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
@@ -153,11 +146,19 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI'
   </section>
 
   <section class="section" id="s-ugc">
-    <div class="section-label"><svg class="icon section-icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></svg> UGC-ролики</div>
-    <h2>Распаковки, обзоры и отзывы — без блогера</h2>
-    <p class="desc">Генерируйте ролики с распаковками, обзорами товаров и отзывами покупателей. Выглядят как настоящий пользовательский контент — без съёмок и актёров.</p>
+    <div class="section-label">🔥 UGC-ролики</div>
+    <h2>Вирусные реакции и живой UGC — мгновенно</h2>
+    <p class="desc">Создавайте ролики с «живыми» реакциями и отзывами, которые выглядят как настоящий пользовательский контент.</p>
     <div class="media-placeholder">Видео / GIF / Изображение</div>
     <button class="cta-btn" onclick="go('ugc_ads')">Сгенерировать →</button>
+  </section>
+
+  <section class="section" id="s-aim">
+    <div class="section-label">🤖 AI-модели</div>
+    <h2>Творите с самыми мощными AI-моделями мира</h2>
+    <p class="desc">Выбирайте из библиотеки передовых AI-моделей для генерации видео, озвучки, монтажа и локализации — всё в одном месте.</p>
+    <div class="media-placeholder">Видео / GIF / Изображение</div>
+    <button class="cta-btn" onclick="go('ai_models')">Сгенерировать →</button>
   </section>
 
 </div>
@@ -187,6 +188,10 @@ btns.forEach(b => {
   function navigate() {
     if (navigated) return;
     navigated = true;
+    if (b.dataset.target === 'faq') {
+      window.location.href = 'faq-menu.html';
+      return;
+    }
     const t = document.getElementById(b.dataset.target);
     if (t) {
       const y = t.getBoundingClientRect().top + window.pageYOffset - 12;
@@ -257,7 +262,8 @@ function go(type) {
     'text_to_video': 'text-to-video.html',
     'photo_to_video': 'photo-to-video.html',
     'product_ads': 'product-ads.html',
-    'ugc_ads': 'ugc-ads.html'
+    'ugc_ads': 'ugc-ads.html',
+    'ai_models': 'ai-models.html'
   };
   if (pages[type]) {
     window.location.href = pages[type];

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VideoGenie FAQ — ответы на частые вопросы об AI-видео с аватарами">
+  <title>VideoGenie — FAQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:            #0d1117;
+      --bg-raised:     #161b22;
+      --bg-glass:      rgba(22, 27, 34, 0.7);
+      --border:        rgba(46, 196, 182, 0.12);
+      --border-hover:  rgba(46, 196, 182, 0.32);
+      --teal:          #2ec4b6;
+      --teal-dim:      rgba(46, 196, 182, 0.10);
+      --teal-glow:     rgba(46, 196, 182, 0.22);
+      --text:          #e6edf3;
+      --text-muted:    #8b949e;
+      --text-subtle:   #484f58;
+      --sidebar-w:     clamp(220px, 26vw, 300px);
+      --nav-h:         56px;
+      --radius:        12px;
+      --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      overscroll-behavior: contain;
+    }
+
+    /* ─── SCROLLBAR ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--teal-glow); }
+    * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+    /* ─── TOPBAR ─────────────────────────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(13, 17, 23, 0.82);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 clamp(14px, 3vw, 28px);
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .logo {
+      width: 30px; height: 30px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--teal) 0%, #1a8a80 100%);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo svg { width: 15px; height: 15px; }
+
+    .topbar-title {
+      font-size: clamp(13px, 1.8vw, 15px);
+      font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .topbar-title em { color: var(--teal); font-style: normal; }
+
+    .topbar-badge {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1px solid var(--border);
+      letter-spacing: 0.04em;
+    }
+
+    .topbar-back {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none; cursor: pointer;
+      padding: 6px 12px; border-radius: 8px;
+      border: 1px solid transparent;
+      transition: color 0.18s, border-color 0.18s, background 0.18s;
+    }
+    .topbar-back:hover {
+      color: var(--teal); border-color: var(--border);
+      background: var(--teal-dim);
+    }
+    .topbar-back svg { width: 14px; height: 14px; }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      padding-top: var(--nav-h);
+      min-height: 100vh;
+    }
+
+    /* ─── SIDEBAR ────────────────────────────────────────────── */
+    .sidebar {
+      position: sticky;
+      top: var(--nav-h);
+      height: calc(100vh - var(--nav-h));
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 0 24px;
+    }
+
+    .sidebar-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-subtle);
+      padding: 0 18px 10px;
+    }
+
+    /* category */
+    .cat { margin-bottom: 2px; }
+
+    .cat-head {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 18px;
+      cursor: pointer; user-select: none;
+      border-left: 2px solid transparent;
+      transition: background 0.18s, border-color 0.18s;
+    }
+    .cat-head:hover { background: var(--teal-dim); }
+    .cat-head.is-open { border-left-color: var(--teal); }
+
+    .cat-icon { width: 16px; height: 16px; color: var(--teal); flex-shrink: 0; }
+
+    .cat-label {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-muted); flex: 1;
+    }
+
+    .cat-arrow {
+      width: 13px; height: 13px;
+      color: var(--text-subtle);
+      transition: transform 0.25s var(--ease-out);
+    }
+    .cat-head.is-open .cat-arrow { transform: rotate(90deg); }
+
+    /* questions list */
+    .cat-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s var(--ease-out);
+    }
+    .cat-body.is-open { max-height: 600px; }
+
+    .q-link {
+      display: block;
+      padding: 8px 18px 8px 43px;
+      font-size: 12.5px; font-weight: 400; line-height: 1.45;
+      color: var(--text-muted);
+      cursor: pointer; text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: color 0.18s, background 0.18s, border-color 0.18s;
+    }
+    .q-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .q-link.is-active {
+      color: var(--teal); font-weight: 600;
+      border-left-color: var(--teal);
+      background: var(--teal-dim);
+    }
+
+    /* ─── ANSWER PANEL ───────────────────────────────────────── */
+    .panel {
+      padding: clamp(28px, 5vw, 56px) clamp(20px, 5vw, 56px);
+      max-width: 820px;
+      width: 100%;
+    }
+
+    /* placeholder */
+    .placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 62vh; gap: 14px;
+      text-align: center;
+    }
+    .placeholder-ring {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-subtle);
+    }
+    .placeholder h2 {
+      font-size: clamp(15px, 2.2vw, 17px); font-weight: 600;
+      color: var(--text-muted);
+    }
+    .placeholder p { font-size: 13px; color: var(--text-subtle); }
+
+    /* answer */
+    .answer { display: none; }
+    .answer.is-visible {
+      display: block;
+      animation: fadeUp 0.28s var(--ease-out) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @supports (animation-composition: accumulate) {
+      .answer.is-visible { animation-fill-mode: both; }
+    }
+
+    .ans-cat {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--teal); margin-bottom: 10px;
+    }
+
+    .ans-q {
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 800; line-height: 1.25;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .ans-rule {
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-hover), transparent);
+      margin-bottom: 28px;
+    }
+
+    .ans-body {
+      font-size: clamp(14px, 1.9vw, 15.5px);
+      line-height: 1.78; color: #c9d1d9;
+    }
+    .ans-body p { margin-bottom: 14px; }
+    .ans-body p:last-child { margin-bottom: 0; }
+    .ans-body strong { color: var(--text); font-weight: 600; }
+
+    .ans-body ul { list-style: none; margin: 12px 0; }
+    .ans-body ul li {
+      padding: 5px 0 5px 22px; position: relative;
+    }
+    .ans-body ul li::before {
+      content: '';
+      position: absolute; left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 5px; height: 5px;
+      border-radius: 50%; background: var(--teal);
+    }
+
+    /* highlight note */
+    .note {
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-top: 22px; padding: 14px 18px;
+      border-radius: var(--radius);
+      background: rgba(46,196,182,0.06);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      font-size: 13.5px; line-height: 1.6;
+      color: var(--text-muted);
+    }
+    .note svg { width: 16px; height: 16px; color: var(--teal); flex-shrink: 0; margin-top: 1px; }
+
+    /* tags */
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 24px; }
+    .tag {
+      font-size: 11.5px; font-weight: 600;
+      padding: 3px 11px; border-radius: 20px;
+      background: var(--teal-dim); color: var(--teal);
+      border: 1px solid var(--border);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── MOBILE FAB ─────────────────────────────────────────── */
+    .fab {
+      display: none;
+      position: fixed; bottom: 22px; right: 20px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--teal); color: #0d1117;
+      border: none; cursor: pointer; z-index: 200;
+      align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(46,196,182,0.45);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .fab:hover { transform: scale(1.07); box-shadow: 0 6px 28px rgba(46,196,182,0.55); }
+    .fab svg { width: 22px; height: 22px; }
+
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 150;
+    }
+    .overlay.is-open { display: block; }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: -100%; bottom: 0;
+        width: min(300px, 88vw);
+        height: 100vh; z-index: 160;
+        padding-top: calc(var(--nav-h) + 10px);
+        background: var(--bg-raised);
+        backdrop-filter: none;
+        border-right: 1px solid var(--border);
+        transition: left 0.32s var(--ease-out);
+      }
+      .sidebar.is-open { left: 0; }
+
+      .fab { display: flex; }
+
+      .panel { padding: 20px 16px 96px; }
+
+      .placeholder { min-height: 48vh; }
+    }
+
+    /* ─── TABLET ─────────────────────────────────────────────── */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      :root { --sidebar-w: clamp(200px, 30vw, 260px); }
+      .panel { padding: 32px 28px; }
+    }
+
+    /* ─── REDUCED MOTION ─────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TOPBAR ──────────────────────────────────────────────── -->
+<header class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  </div>
+  <span class="topbar-title">Video<em>Genie</em></span>
+  <span class="topbar-badge">FAQ</span>
+  <a href="javascript:history.back()" class="topbar-back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Назад
+  </a>
+</header>
+
+<!-- ── MOBILE OVERLAY ──────────────────────────────────────── -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ── FAB ────────────────────────────────────────────────── -->
+<button class="fab" id="fab" onclick="toggleSidebar()" aria-label="Меню вопросов">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+    <line x1="3" y1="6"  x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+</button>
+
+<!-- ── SHELL ───────────────────────────────────────────────── -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <p class="sidebar-label">Разделы</p>
+    <div id="nav"></div>
+  </aside>
+
+  <!-- PANEL -->
+  <main class="panel">
+    <div class="placeholder" id="placeholder">
+      <div class="placeholder-ring">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+        </svg>
+      </div>
+      <h2>Выберите вопрос</h2>
+      <p>Ответ появится здесь</p>
+    </div>
+    <div class="answer" id="answer"></div>
+  </main>
+
+</div>
+
+<script>
+/* ── DATA ─────────────────────────────────────────────────── */
+const FAQ = [
+  {
+    id: 'how',
+    label: 'Как это работает',
+    icon: `<svg class="cat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`,
+    items: [
+      {
+        id: 'what-is',
+        q: 'Что такое VideoGenie?',
+        a: `<p><strong>VideoGenie</strong> — Telegram-бот для создания AI-видео с реалистичными цифровыми аватарами. Введите текст, выберите персонажа — бот сгенерирует профессиональное видео и пришлёт его прямо в чат.</p>
+            <p>В основе — <strong>HeyGen API</strong>, одна из ведущих платформ для синтеза видео с говорящими аватарами. HeyGen API появился совсем недавно и VideoGenie — один из первых ботов, работающих на нём.</p>`,
+        note: 'Видео не требует монтажа, актёров или студии — только текст и пара минут.',
+        tags: ['HeyGen API', 'AI-видео', 'Telegram']
+      },
+      {
+        id: 'how-create',
+        q: 'Как создать видео?',
+        a: `<p>Всё делается в несколько шагов:</p>
+            <ul>
+              <li>Нажмите кнопку <strong>«Generate»</strong> в боте</li>
+              <li>Выберите сценарий: Текст → Видео, Фото → Видео, UGC-ролик и другие</li>
+              <li>Выберите аватара и желаемый образ</li>
+              <li>Укажите язык и формат видео</li>
+              <li>Введите текст, который аватар произнесёт</li>
+              <li>Нажмите кнопку генерации и подождите</li>
+            </ul>
+            <p>Готовое видео придёт в чат автоматически — обычно через 1–4 минуты.</p>`,
+        tags: ['генерация', 'аватар', 'сценарии']
+      },
+      {
+        id: 'how-long',
+        q: 'Сколько времени занимает генерация?',
+        a: `<p>В большинстве случаев — <strong>1–4 минуты</strong>. Время зависит от длины текста и текущей нагрузки на серверы HeyGen.</p>
+            <p>Для сценария <strong>Фото → Видео</strong> (движок v4) может быть дольше — до 5–7 минут, так как обработка фото требует больше вычислений.</p>`,
+        note: 'Можно закрыть приложение — бот пришлёт видео автоматически, как только оно будет готово.',
+        tags: ['время', 'v4', 'генерация']
+      }
+    ]
+  },
+  {
+    id: 'avatars',
+    label: 'Аватары и голоса',
+    icon: `<svg class="cat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    items: [
+      {
+        id: 'avatars-list',
+        q: 'Какие аватары доступны?',
+        a: `<p>Сейчас доступно <strong>9 аватаров</strong> в разных стилях:</p>
+            <ul>
+              <li><strong>Корпоратив:</strong> Ralph, Savannah</li>
+              <li><strong>Серьёзный:</strong> Douglas, Corsaro</li>
+              <li><strong>Дружелюбный:</strong> Emmett, Kendra, Mendoza</li>
+              <li><strong>Продвинутый:</strong> Gabrielle</li>
+              <li><strong>Молодёжный:</strong> Haley</li>
+            </ul>
+            <p>Каждый аватар доступен в нескольких образах — разные наряды и фоны на выбор. Коллекция будет расширяться.</p>`,
+        tags: ['9 аватаров', 'стили', 'образы']
+      },
+      {
+        id: 'own-photo',
+        q: 'Можно ли загрузить своё фото?',
+        a: `<p>Да — это сценарий <strong>«Фото → Видео»</strong>. Вы загружаете своё фото, и система создаёт говорящего аватара на его основе. Аватар будет выглядеть как вы.</p>
+            <p>Сценарий работает на движке <strong>HeyGen v4</strong> — более мощном, с разрешением до 1080p. Стоит дороже и занимает чуть больше времени.</p>`,
+        note: 'Для лучшего результата: чёткое фото лица, нейтральный фон, хорошее освещение, взгляд в камеру.',
+        tags: ['своё фото', 'v4', '1080p']
+      },
+      {
+        id: 'languages',
+        q: 'Какие языки поддерживаются?',
+        a: `<p>Аватары говорят на <strong>любом языке</strong> — система автоматически определяет язык по введённому тексту. Язык также можно выбрать вручную.</p>
+            <p>Лучшее качество произношения:</p>
+            <ul>
+              <li>Русский, Английский</li>
+              <li>Испанский, Немецкий, Французский</li>
+              <li>Португальский, Итальянский, Китайский, Японский</li>
+            </ul>`,
+        tags: ['языки', 'мультиязычность', 'русский']
+      }
+    ]
+  },
+  {
+    id: 'quality',
+    label: 'Форматы и качество',
+    icon: `<svg class="cat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+    items: [
+      {
+        id: 'v2-vs-v4',
+        q: 'Чем отличается HeyGen v2 от v4?',
+        a: `<p>Два движка с разными характеристиками:</p>
+            <ul>
+              <li><strong>v2</strong> — стандартный движок. До 720p, быстрее, дешевле. Используется для всех сценариев с готовыми аватарами.</li>
+              <li><strong>v4</strong> — премиум-движок. До 1080p, более реалистичный результат. Только для сценария «Фото → Видео».</li>
+            </ul>`,
+        note: 'Для большинства задач v2 более чем достаточен. v4 нужен, если важно максимальное качество или вы используете своё фото.',
+        tags: ['v2', 'v4', '720p', '1080p']
+      },
+      {
+        id: 'resolution',
+        q: 'Какое разрешение у видео?',
+        a: `<p><strong>HeyGen v2</strong> (готовые аватары): до <strong>720p</strong>.</p>
+            <p><strong>HeyGen v4</strong> (Фото → Видео): до <strong>1080p</strong>.</p>
+            <p>Реальные размеры зависят от выбранного формата (16:9, 9:16, 1:1) и настроек генерации.</p>`,
+        tags: ['разрешение', '720p', '1080p', 'качество']
+      },
+      {
+        id: 'format',
+        q: 'Какой формат выбрать?',
+        a: `<p>Зависит от площадки, где будет использоваться видео:</p>
+            <ul>
+              <li><strong>16:9</strong> — горизонтальный. YouTube, корпоративные презентации, вебинары, реклама на ПК.</li>
+              <li><strong>9:16</strong> — вертикальный. Instagram Reels, TikTok, YouTube Shorts, Telegram Stories.</li>
+              <li><strong>1:1</strong> — квадрат. Посты в соцсетях, универсальный вариант для любой площадки.</li>
+            </ul>`,
+        tags: ['16:9', '9:16', '1:1', 'формат']
+      }
+    ]
+  },
+  {
+    id: 'delivery',
+    label: 'Получение видео',
+    icon: `<svg class="cat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    items: [
+      {
+        id: 'where',
+        q: 'Куда придёт готовое видео?',
+        a: `<p>Видео доставляется двумя путями одновременно:</p>
+            <ul>
+              <li><strong>Telegram-чат с ботом</strong> — видеофайл приходит прямо в диалог. Можно сразу сохранить или переслать.</li>
+              <li><strong>Облачное хранилище</strong> — резервная копия автоматически сохраняется в Google Drive.</li>
+            </ul>
+            <p>Видеофайл в Telegram хранится <strong>постоянно</strong> и доступен в любой момент.</p>`,
+        tags: ['Telegram', 'Google Drive', 'доставка']
+      },
+      {
+        id: 'slow',
+        q: 'Почему видео долго генерируется?',
+        a: `<p>Генерация видео — тяжёлый процесс на стороне серверов HeyGen. Нормальное время — <strong>1–4 минуты</strong>.</p>
+            <p>Может занять дольше, если:</p>
+            <ul>
+              <li>Текст очень длинный</li>
+              <li>Высокая нагрузка на серверы HeyGen в данный момент</li>
+              <li>Выбран сценарий Фото → Видео (движок v4)</li>
+            </ul>`,
+        note: 'Не нужно держать приложение открытым — бот пришлёт видео автоматически.',
+        tags: ['время', 'нагрузка', 'v4']
+      },
+      {
+        id: 'no-video',
+        q: 'Почему видео не пришло?',
+        a: `<p>Если прошло более <strong>10 минут</strong>, попробуйте по порядку:</p>
+            <ul>
+              <li>Проверьте интернет-соединение</li>
+              <li>Убедитесь, что бот не заблокирован в Telegram</li>
+              <li>Попробуйте сгенерировать снова</li>
+            </ul>
+            <p>Если проблема повторяется — напишите нам, разберёмся.</p>`,
+        tags: ['проблема', 'поддержка', 'ошибка']
+      },
+      {
+        id: 'link-expiry',
+        q: 'Сколько хранится ссылка на видео?',
+        a: `<p>Прямая CDN-ссылка от HeyGen действует около <strong>24 часов</strong> — после этого она становится недоступной.</p>
+            <p>Однако <strong>видеофайл в Telegram остаётся навсегда</strong> — он сохраняется в чате как обычное видео и не исчезнет.</p>`,
+        note: 'Рекомендуем сохранить видео на устройство сразу после получения.',
+        tags: ['хранение', 'ссылка', '24 часа']
+      }
+    ]
+  },
+  {
+    id: 'payment',
+    label: 'Оплата',
+    icon: `<svg class="cat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+    items: [
+      {
+        id: 'price',
+        q: 'Сколько стоит генерация?',
+        a: `<p>Система оплаты сейчас в разработке. Ближайшие планы:</p>
+            <ul>
+              <li><strong>Стандартное видео (v2)</strong> — небольшое количество Telegram Stars</li>
+              <li><strong>Фото → Видео (v4)</strong> — дороже, так как это более мощный движок</li>
+            </ul>
+            <p>Точные тарифы будут опубликованы при запуске оплаты. Следите за обновлениями.</p>`,
+        tags: ['цена', 'тарифы', 'скоро']
+      },
+      {
+        id: 'stars',
+        q: 'Что такое Telegram Stars?',
+        a: `<p><strong>Telegram Stars</strong> — внутренняя валюта Telegram для оплаты товаров и услуг прямо внутри мессенджера. Не требуют банковских карт.</p>
+            <p>Купить Stars можно:</p>
+            <ul>
+              <li>В настройках Telegram → «Telegram Stars»</li>
+              <li>Через App Store или Google Play</li>
+            </ul>
+            <p>Оплата через Stars — это безопасно, мгновенно и без лишних шагов.</p>`,
+        tags: ['Telegram Stars', 'валюта', 'оплата']
+      },
+      {
+        id: 'how-pay',
+        q: 'Как оплатить?',
+        a: `<p>Система оплаты <strong>пока не запущена</strong>. Сейчас VideoGenie работает в тестовом режиме.</p>
+            <p>Когда оплата появится, всё будет максимально просто: бот пришлёт счёт в Stars прямо в чат — достаточно нажать одну кнопку.</p>`,
+        note: 'Мы сообщим о запуске оплаты отдельным уведомлением.',
+        tags: ['оплата', 'скоро', 'Stars']
+      }
+    ]
+  }
+];
+
+/* ── RENDER SIDEBAR ───────────────────────────────────────── */
+const nav = document.getElementById('nav');
+FAQ.forEach((cat, ci) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'cat';
+  wrap.innerHTML = `
+    <div class="cat-head ${ci === 0 ? 'is-open' : ''}"
+         data-cat="${cat.id}"
+         onclick="toggleCat(this)">
+      ${cat.icon}
+      <span class="cat-label">${cat.label}</span>
+      <svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </div>
+    <div class="cat-body ${ci === 0 ? 'is-open' : ''}">
+      ${cat.items.map(item => `
+        <a class="q-link"
+           href="#${item.id}"
+           data-cat="${cat.id}"
+           data-item="${item.id}"
+           onclick="pick(event, this)">
+          ${item.q}
+        </a>
+      `).join('')}
+    </div>`;
+  nav.appendChild(wrap);
+});
+
+/* ── TOGGLE CATEGORY ──────────────────────────────────────── */
+function toggleCat(head) {
+  const body = head.nextElementSibling;
+  const open = head.classList.contains('is-open');
+  head.classList.toggle('is-open', !open);
+  body.classList.toggle('is-open', !open);
+}
+
+/* ── SHOW ANSWER ──────────────────────────────────────────── */
+function pick(e, el) {
+  e.preventDefault();
+  const catId  = el.dataset.cat;
+  const itemId = el.dataset.item;
+  const cat    = FAQ.find(c => c.id === catId);
+  const item   = cat.items.find(i => i.id === itemId);
+
+  // Active state
+  document.querySelectorAll('.q-link').forEach(l => l.classList.remove('is-active'));
+  el.classList.add('is-active');
+
+  // Render
+  const ph  = document.getElementById('placeholder');
+  const ans = document.getElementById('answer');
+  ph.style.display = 'none';
+  ans.classList.remove('is-visible');
+  void ans.offsetWidth; // reflow → restart animation
+
+  ans.innerHTML = `
+    <p class="ans-cat">${cat.label}</p>
+    <h1 class="ans-q">${item.q}</h1>
+    <div class="ans-rule"></div>
+    <div class="ans-body">${item.a}</div>
+    ${item.note ? `
+      <div class="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <circle cx="12" cy="16" r="0.5" fill="currentColor"/>
+        </svg>
+        <span>${item.note}</span>
+      </div>` : ''}
+    ${item.tags ? `<div class="tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+  `;
+  ans.classList.add('is-visible');
+
+  history.replaceState(null, '', '#' + itemId);
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+/* ── MOBILE SIDEBAR ───────────────────────────────────────── */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('is-open');
+  document.getElementById('overlay').classList.toggle('is-open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('is-open');
+  document.getElementById('overlay').classList.remove('is-open');
+}
+
+/* ── DEEP LINK ON LOAD ────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = location.hash.slice(1);
+  if (!hash) return;
+  let found = null;
+  FAQ.forEach(cat => cat.items.forEach(item => {
+    if (item.id === hash) found = { cat, item };
+  }));
+  if (!found) return;
+
+  // Open category
+  const heads = document.querySelectorAll('.cat-head');
+  heads.forEach(h => {
+    if (h.dataset.cat === found.cat.id) {
+      h.classList.add('is-open');
+      h.nextElementSibling.classList.add('is-open');
+    }
+  });
+
+  // Click the link
+  const link = document.querySelector(`.q-link[data-item="${hash}"]`);
+  if (link) setTimeout(() => pick({ preventDefault: () => {} }, link), 80);
+});
+</script>
+</body>
+</html>
